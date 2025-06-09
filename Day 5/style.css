@@ -10,17 +10,23 @@ body {
 }
 
 header {
-  
+    position: fixed;
+    z-index: 2;
+    width: 100%;
     padding-top: 10px;
 	padding-left: 10px;
-    background: transparent url("header\ pattern\ svg.svg") 0% 0% padding-box;
-    background-color: #002b38;
-    /* mix-blend-mode: overlay;  */
-    /* opacity: 0.8; */
+    background-color: #25313F;
     border-bottom: 4px solid rgb(0, 162, 255);
 }
 
-.header-logo {
+.header-ptr{
+    position: sticky;
+    top: 0;
+    left: 0;
+   mix-blend-mode: overlay;
+    z-index: 5;
+    background: transparent url("header\ pattern\ svg.svg") 0% 0% padding-box;
+    height: 50px;
 }
 
 .container {
@@ -29,8 +35,8 @@ header {
     align-items: center;
     /* background-color: rgb(230, 230, 230); */
     background-color: #eeeeee;
-    height: 100vh;
-	width: 100%cd ;
+    height: 750px;
+	width: 100% ;
 }
 
 .login {
@@ -103,6 +109,7 @@ select {
     border: 0;
     border-bottom: 1px solid rgb(231, 231, 231);
     width: 350px;
+    font-size: 16px;
 }
 
 .add-label {
@@ -127,7 +134,7 @@ select {
     font-weight: 600;
     position: absolute;
     left: 54%;
-    top: 69.5%;
+    top: 65%;
     /* padding-top: 8px; */
     color: green;
     /* padding-left: 5px; */
@@ -137,7 +144,7 @@ select {
     height: 20px;
     position: absolute;
     left: 60%;
-    top: 67%;
+    top: 63%;
     padding-top: 8px;
 }
 
@@ -146,7 +153,7 @@ select {
     font-weight: 600;
     position: absolute;
     left: 54%;
-    top: 61%;
+    top: 57%;
     color: green;
 }
 
@@ -189,6 +196,9 @@ select {
     background-position-x: 100%;
     background-position-y: -5px;
     padding-left: 4px;
+    font-family: "quicksand";
+    font-weight: 500;
+    margin-top: 5px;
 }
 
 .about{
@@ -223,4 +233,10 @@ footer {
 	font-size: 12px;
 	font-weight: 500;
 	color: #616161;
+}
+
+.hl{
+    height: 18px;
+    border-left: 2px solid rgba(128, 128, 128, 0.301);
+    margin-inline: 8px;
 }
