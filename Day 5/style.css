@@ -1,0 +1,226 @@
+@font-face {
+    font-family: "quicksand";
+    src: url("Quicksand-VariableFont_wght.ttf");
+}
+
+body {
+    font-family: "Quicksand";
+    padding: 0;
+    margin: 0;
+}
+
+header {
+  
+    padding-top: 10px;
+	padding-left: 10px;
+    background: transparent url("header\ pattern\ svg.svg") 0% 0% padding-box;
+    background-color: #002b38;
+    /* mix-blend-mode: overlay;  */
+    /* opacity: 0.8; */
+    border-bottom: 4px solid rgb(0, 162, 255);
+}
+
+.header-logo {
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* background-color: rgb(230, 230, 230); */
+    background-color: #eeeeee;
+    height: 100vh;
+	width: 100%cd ;
+}
+
+.login {
+    border-top: 4px solid rgb(0, 162, 255);
+    background-color: white;
+    width: 350px;
+    padding-inline: 25px;
+    padding-bottom: 25px;
+}
+
+.header {
+    display: flex;
+    font-size: large;
+    font-weight: 600;
+    gap: 50px;
+    margin-bottom: 15px;
+}
+
+.header > img {
+    width: 20px;
+    margin-right: 10px;
+}
+
+input[type="radio"] {
+    accent-color: green;
+    /* outline: 1px solid red; */
+    border-radius: 100%;
+    border: 2px solid rgb(184, 46, 46);
+}
+
+.option {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    gap: 4px;
+}
+
+.option > label {
+    padding-right: 20px;
+    padding-top: 2px;
+    font-size: smaller;
+    font-weight: 500;
+}
+
+.address > label {
+    font-size: 10px;
+}
+
+.address,
+.cred {
+    margin-top: 10px;
+    margin-bottom: 40px;
+}
+
+.btn-login {
+    display: block;
+    background-color: rgb(22, 223, 139);
+    width: 160px;
+    border: 0;
+    margin-top: 20px;
+    padding-block: 8px;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px,
+        rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+    border-radius: 2px;
+    font-size: 12px;
+    color: rgb(2, 58, 39);
+}
+
+select {
+    border: 0;
+    border-bottom: 1px solid rgb(231, 231, 231);
+    width: 350px;
+}
+
+.add-label {
+    font-size: small;
+    padding-left: 4px;
+}
+
+.credentails {
+    border: 0;
+    border-bottom: 1px solid rgb(231, 231, 231);
+    width: 350px;
+}
+
+.flex {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.forgot {
+    font-size: 12px;
+    font-weight: 600;
+    position: absolute;
+    left: 54%;
+    top: 69.5%;
+    /* padding-top: 8px; */
+    color: green;
+    /* padding-left: 5px; */
+}
+
+.preview {
+    height: 20px;
+    position: absolute;
+    left: 60%;
+    top: 67%;
+    padding-top: 8px;
+}
+
+.username {
+    font-size: 12px;
+    font-weight: 600;
+    position: absolute;
+    left: 54%;
+    top: 61%;
+    color: green;
+}
+
+input[type="checkbox"] {
+    accent-color: green;
+}
+
+.tick {
+    font-size: small;
+    padding-top: 1px;
+    font-weight: 600;
+}
+
+.div-tick {
+    display: flex;
+    /* justify-content: center; */
+    /* align-items: center; */
+    gap: 4px;
+}
+
+textarea:focus,
+input:focus {
+    outline: none;
+    border-bottom: 1px solid green;
+    box-shadow: rgba(33, 35, 38, 0.1) 0px 10px 10px -10px;
+}
+
+textarea,
+input[type="password"] {
+    padding: 6px;
+}
+
+select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+
+    background: transparent;
+    background-image: url("data:image/svg+xml;utf8,<svg fill='black' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
+    background-repeat: no-repeat;
+    background-position-x: 100%;
+    background-position-y: -5px;
+    padding-left: 4px;
+}
+
+.about{
+	/* width: 100%; */
+	background-color:#eeeeee;
+	color: #1F7A54;
+	font-weight:500 ;
+	font-size: 14px;
+	padding-bottom: 10px;
+}
+
+footer {
+    height: 40px;
+    background: #e0e1e1;
+	display: flex;
+	justify-content: center;
+	gap: 14px;
+	align-items: center;
+	padding-block: 5px;
+}
+
+.footer-logo{
+	margin-top: 3px;
+}
+
+.line{
+	height: 23px;
+	border-right: 2px solid #0000001F;
+}
+
+.footer-text{
+	font-size: 12px;
+	font-weight: 500;
+	color: #616161;
+}
