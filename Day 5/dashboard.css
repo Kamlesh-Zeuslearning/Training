@@ -12,13 +12,13 @@ body {
 }
 
 header {
-    
     width: 100%;
     padding-top: 10px;
     padding-inline: 20px;
-    /* background: transparent url("header\ pattern\ svg.svg") 0% 0% padding-box; */
-    background-color: #25313F;
-   
+    background:  url("header\ pattern\ svg.svg") ;
+    background-blend-mode: overlay;
+    background-color: #25313f;
+
     /* opacity: 0.8; */
     /* border-bottom: 4px solid rgb(0, 162, 255); */
     display: flex;
@@ -26,17 +26,10 @@ header {
     align-items: center;
     color: #3fd28b;
     position: fixed;
+    z-index: 2;
 }
 
-.header-ptr{
-    position: sticky;
-    top: 0;
-    left: 0;
-   mix-blend-mode: overlay;
-    z-index: 5;
-    background: transparent url("header\ pattern\ svg.svg") 0% 0% padding-box;
-    height: 50px;
-}
+
 
 .alert,
 .announcements {
@@ -69,24 +62,10 @@ header {
     overflow: hidden;
 }
 
-.hamburger{
+.hamburger {
     display: none;
     padding-right: 45px;
 }
-
-@media screen and (max-width: 900px) {
-    .container{
-        padding-inline: 20px;
-    }
-    .menu{
-        display: none;
-    }
-    .hamburger{
-        display: block;      
-    }
-}
-
-
 
 .select {
     display: flex;
@@ -99,7 +78,7 @@ header {
 }
 
 .section {
-    padding-top: 80px;
+    padding-top: 70px;
     display: flex;
     justify-content: center;
 
@@ -120,11 +99,11 @@ header {
     font-weight: 500;
     width: 100%;
     background-color: #8ddc97;
-    
+
     /* padding-top: 5px; */
 }
 
-.hr-sm{
+.hr-sm {
     height: 1px;
     margin-right: 5px;
     margin-left: 3px;
@@ -185,8 +164,6 @@ header {
     font-family: "Quicksand";
 }
 
-
-
 .detail-bold {
     color: #333333;
     font-size: 16px;
@@ -208,7 +185,22 @@ header {
 .item {
     background-color: #ffffff;
     padding: 20px;
-    min-width: 476px;
+    max-width: 476px;
+    position: relative;
+}
+
+.tag {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: #ffe4e6;
+    color: #d80000;
+    font-size: 10px;
+    width: 52px;
+    /* height: 14px; */
+    text-align: center;
+    padding-top: 3px;
+    font-weight: 500;
 }
 
 .item-text {
@@ -234,7 +226,6 @@ header {
 .chapter-name {
     width: 250px;
 }
-
 
 .green {
     color: #1f7a54;
@@ -273,8 +264,8 @@ header {
     margin-bottom: 5px;
 }
 
-.name > select{
-        -webkit-appearance: none;
+.name > select {
+    -webkit-appearance: none;
     -moz-appearance: none;
 
     background: transparent;
@@ -285,11 +276,11 @@ header {
     padding-left: 4px;
     border: 0;
     border-bottom: 1px solid rgba(128, 128, 128, 0.253);
-     font-size: 16px;
-     padding: 5px;
-     width: 300px;
-     font-weight: 500;
-     font-family: "Quicksand";;
+    font-size: 16px;
+    padding: 5px;
+    width: 300px;
+    font-weight: 500;
+    font-family: "Quicksand";
 }
 
 .name-details {
@@ -351,4 +342,53 @@ footer {
     font-size: 12px;
     font-weight: 500;
     color: #616161;
+}
+
+.menu-mobile {
+    display: none;
+   
+}
+
+.dropdown {
+    border: 1px solid red;
+    position: relative;
+    display: inline-block;
+    z-index: 9;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #e0e1e1;
+    z-index: 8;
+    right: 70%;
+    width: 100px;
+
+    padding: 5px;
+}
+
+
+.dropdown:hover {
+    border: 1px solid purple;
+}
+
+
+@media screen and (max-width: 900px) {
+    .container {
+        padding-inline: 20px;
+    }
+    .menu {
+        display: none;
+    }
+    .hamburger {
+        display: block;
+    }
+    .section {
+        padding-top: 60px;
+    }
+    .menu-mobile {
+        z-index: 10;
+        display: flex;
+        gap: 25px;
+    }
 }
