@@ -57,15 +57,25 @@ header .menu-mobile .dropdown {
 header .menu-mobile .dropdown .hamburger {
   display: none;
 }
+header .menu-mobile .dropdown .blank {
+  height: 20px;
+  position: absolute;
+  right: 10%;
+  width: 40px;
+}
 header .menu-mobile .dropdown .dropdown-content {
-  display: none;
+  height: 0px;
   position: absolute;
   z-index: 8;
   right: 10%;
   width: 280px;
+  top: 35px;
   background-color: #e0e1e1;
   box-shadow: 0px 13px 20px rgba(0, 0, 0, 0.2392156863);
   border-radius: 2px;
+  opacity: 0;
+  transform: translateY(-200px);
+  transition: all 1s ease-out;
 }
 header .menu-mobile .dropdown .dropdown-content span {
   display: block;
@@ -77,6 +87,99 @@ header .menu-mobile .dropdown .dropdown-content span {
 }
 header .menu-mobile .dropdown .dropdown-content span:hover {
   background-color: #f3f3f3;
+}
+header .menu-mobile .dropdown .dropdown-content .dropdown-2 {
+  padding-top: 8px;
+}
+header .menu-mobile .dropdown .dropdown-content .dropdown-2 .dropdown-content-2 {
+  height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: all 1s ease-out;
+}
+header .menu-mobile .dropdown .dropdown-content .dropdown-2:hover .dropdown-content-2 {
+  display: block;
+  height: 80px;
+  opacity: 100%;
+  transition: all 1s ease-out;
+}
+header .menu-mobile .announcements .announcementsList {
+  position: absolute;
+  right: 0;
+  top: 35px;
+  width: 315px;
+  height: 582px;
+  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.1607843137);
+  background-color: #ffffff;
+  color: #222222;
+  border-radius: 2px;
+}
+header .menu-mobile .announcements .announcementsList .listScroll {
+  height: 540px;
+  overflow-y: scroll;
+}
+header .menu-mobile .announcements .announcementsList .listScroll .anonouncementCard {
+  border-bottom: 1px solid rgba(128, 128, 128, 0.247);
+  padding-inline: 16px;
+  padding-block: 14px;
+}
+header .menu-mobile .announcements .announcementsList .listScroll .anonouncementCard .announcementName {
+  font-size: 12px;
+  color: #6e6e6e;
+}
+header .menu-mobile .announcements .announcementsList .listScroll .anonouncementCard .announcementName span {
+  font-weight: 500;
+  color: #222222;
+}
+header .menu-mobile .announcements .announcementsList .listScroll .anonouncementCard .announcementName i {
+  float: right;
+}
+header .menu-mobile .announcements .announcementsList .listScroll .anonouncementCard .announcementMessage {
+  font-size: 14px;
+  display: block;
+  margin-block: 6px;
+}
+header .menu-mobile .announcements .announcementsList .listScroll .anonouncementCard div div {
+  color: #6e6e6e;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+}
+header .menu-mobile .announcements .announcementsList .listScroll .anonouncementCard #paperclipIcon {
+  transform: scale(0.7) rotate(-45deg);
+}
+header .menu-mobile .announcements .announcementsList .showBtn {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+  height: 42px;
+  font-size: 14px;
+  box-shadow: 0px 1px 6px rgba(0, 0, 0, 0.2392156863);
+  border-radius: 0px 0px 2px 2px;
+  color: #1f7a54;
+}
+header .menu-mobile .announcements .announcementsList .showBtn .showBtnLine {
+  height: 25px;
+  border-left: 1px solid rgba(0, 0, 0, 0.2039215686);
+}
+::-webkit-scrollbar {
+  width: 0.7vw;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #f5f5f5;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #666666;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #6d75e8;
 }
 
 .alert,
@@ -358,6 +461,10 @@ footer .footer-text {
   }
   header .menu-mobile .dropdown:hover .dropdown-content {
     display: block;
+    min-height: 160px;
+    transform: translateY(0);
+    opacity: 100%;
+    transition: all 1s ease-out;
   }
   header .menu-mobile .dropdown:hover .hamburger {
     filter: invert(0%) sepia(100%) saturate(1%) hue-rotate(296deg);
