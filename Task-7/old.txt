@@ -1,0 +1,110 @@
+const box = document.getElementById('box')
+const parent = document.getElementById('parent')
+
+let OffsetX, OffsetY;
+
+box.addEventListener('pointerdown', (e) =>{
+    OffsetX = e.clientX - box.getBoundingClientRect().left;
+    OffsetY = e.clientY - box.getBoundingClientRect().top;
+
+    document.addEventListener('pointermove', pointerMoveHandler)
+    document.addEventListener('pointerup', pointerUpHandler)
+})
+
+function pointerMoveHandler(e){
+    box.style.left = `${e.clientX - OffsetX}px`;
+    box.style.top = `${e.clientY -OffsetY}px`;
+    if(e.clientX - OffsetX <= 0){
+        box.style.left = 0;
+    }
+    else if(e.clientX + (50 - OffsetX)  >= parent.getBoundingClientRect().width){
+        box.style.left =  `${parent.getBoundingClientRect().width - box.offsetWidth}px`;
+    }
+
+    if(e.clientY -OffsetY <= 0){
+        box.style.top = 0;
+    }
+
+    else if(box.getBoundingClientRect().bottom  >= parent.getBoundingClientRect().height){
+        box.style.top =  `${parent.getBoundingClientRect().height - box.offsetHeight}px`; 
+    }
+    
+    box.style.position = 'absolute';
+    console.log(e.clientX)
+}
+
+function pointerUpHandler(e){
+    document.removeEventListener('pointermove', pointerMoveHandler);
+    document.removeEventListener('pointerup', pointerUpHandler);
+}
+
+window.onresize = resizeHandler;
+
+function resizeHandler() {
+    if (
+        box.getBoundingClientRect().left + box.offsetWidth >=
+        parent.offsetWidth
+    ) {
+        box.style.left = ${parent.offsetWidth - box.offsetWidth}px;
+        console.log("here", pageXOffset)
+    }
+
+    if (
+        box.getBoundingClientRect().top + box.offsetHeight >=
+        window.innerHeight
+    ) {
+        box.style.top = ${window.innerHeight - box.offsetHeight}px;
+    }
+    console.log(pageXOffset, ", ", window.innerWidth);
+}
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Document</title>
+</head>
+<body>
+    <div class="parent" id="parent">
+        <div class="boxClass" id="box">
+
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body{
+    touch-action: none;
+}
+
+.parent{
+    height: 100dvh;
+    width: 100dvw;
+    background-color: #e9d8a6;
+}
+
+.boxClass{
+    height: 50px;
+    width: 50px;
+    background-color: #ee9b00;
+}
