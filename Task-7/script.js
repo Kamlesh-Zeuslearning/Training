@@ -55,7 +55,6 @@ class Box {
             this.div.style.left = 0;
         } else if (this.div.getBoundingClientRect().right >= parentRect.width) {
             this.div.style.left = `${parentRect.width - this.div.offsetWidth}px`;
-            console.log("here")
         }
 
         if (e.clientY - this.OffsetY <= 0) {
@@ -77,6 +76,8 @@ class Box {
 
 const parent1 = new Parent();
 const box1 = new Box(parent1);
+
+const box2 = new Box(parent1)
 
 
 
