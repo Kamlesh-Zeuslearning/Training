@@ -1,3 +1,7 @@
+let activeBox = null;
+let offsetX = 0;
+let offsetY = 0;
+
 class Parent {
     constructor() {
         this.div = document.createElement("div");
@@ -21,83 +25,61 @@ class Box {
         );
 
         parent.appendBox(this);
-        this.addDragEventListeners();
+        this.initDragEvents();
 
         this.offsetX = 0;
         this.offsetY = 0;
     }
 
-    appendTo(element) {
-        element.appendChild(this.div);
-    }
-
-    addDragEventListeners() {
+    initDragEvents(){
         this.div.addEventListener("pointerdown", (e) => {
-            const parentRect = this.div.parentElement.getBoundingClientRect();
-            this.OffsetX = e.clientX - this.div.getBoundingClientRect().left;
-            this.OffsetY = e.clientY - this.div.getBoundingClientRect().top;
-
-            this.boundMove = this.pointerMoveHandler.bind(this);
-            this.boundUp = this.pointerUpHandler.bind(this);
-
-            document.addEventListener("pointermove", this.boundMove);
-            document.addEventListener("pointerup", this.boundUp);
+            const rect = this.div.getBoundingClientRect();
+            offsetX = e.clientX - rect.left;
+            offsetY = e.clientY - rect.top;
+            activeBox = this.div;
         });
     }
 
-    pointerMoveHandler(e) {
-        // Boundaries check for parent
-        const parentRect = this.div.parentElement.getBoundingClientRect();
-
-        if (e.clientX - this.OffsetX <= parentRect.left) {
-            this.div.style.left = 0;
-        } else if (
-            e.clientX - this.OffsetX + this.div.getBoundingClientRect().width >=
-            parentRect.right
-        ) {
-            this.div.style.left = `${
-                parentRect.width - this.div.offsetWidth
-            }px`;
-            console.log(parentRect.right, "-", this.div.offsetWidth);
-        } else {
-            this.div.style.left = `${
-                e.clientX - parentRect.left - this.OffsetX
-            }px`;
-        }
-
-        if (e.clientY - this.OffsetY <= parentRect.top) {
-            this.div.style.top = 0;
-        } else if (
-            e.clientY - this.OffsetY + this.div.getBoundingClientRect().height >
-            parentRect.bottom
-        ) {
-            this.div.style.top = `${
-                parentRect.height - this.div.offsetHeight
-            }px`;
-        } else {
-            this.div.style.top = `${
-                e.clientY - parentRect.top - this.OffsetY
-            }px`;
-        }
-    }
-
-    pointerUpHandler(e) {
-        document.removeEventListener("pointermove", this.boundMove);
-        document.removeEventListener("pointerup", this.boundUp);
-    }
 }
 
+
+document.addEventListener("pointermove", (e) => {
+    if (!activeBox) return;
+
+    const parent = activeBox.parentElement;
+    const parentRect = parent.getBoundingClientRect();
+    const boxWidth = activeBox.offsetWidth;
+    const boxHeight = activeBox.offsetHeight;
+
+    let left = e.clientX - parentRect.left - offsetX;
+    let top = e.clientY - parentRect.top - offsetY;
+
+    // Clamp values
+    left = Math.max(0, Math.min(left, parentRect.width - boxWidth));
+    top = Math.max(0, Math.min(top, parentRect.height - boxHeight));
+
+    activeBox.style.left = `${left}px`;
+    activeBox.style.top = `${top}px`;
+});
+
+document.addEventListener("pointerup", () => {
+    activeBox = null;
+});
+
 const parent1 = new Parent();
-const box1 = new Box(parent1);
-
 const parent2 = new Parent();
-const box2 = new Box(parent2);
-
 const parent3 = new Parent();
-const box3 = new Box(parent3);
-
 const parent4 = new Parent();
-const box4 = new Box(parent4);
+
+new Box(parent1);
+new Box(parent2);
+new Box(parent3);
+new Box(parent4);
+
+new Box(parent1);
+new Box(parent2);
+new Box(parent3);
+new Box(parent4);
 
 window.onresize = () => {
     document.querySelectorAll(".parent").forEach((parent) => {
