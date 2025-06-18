@@ -3,7 +3,7 @@ class Parent {
         this.div = document.createElement("div");
         this.div.classList.add("parent");
         this.div.style.position = "relative";
-        document.body.appendChild(this.div);
+        document.getElementById("wrapper").appendChild(this.div);
     }
     appendBox(box) {
         this.div.appendChild(box.div);
@@ -14,7 +14,7 @@ class Box {
     constructor(parent) {
         this.div = document.createElement("div");
         this.div.classList.add("box");
-        this.div.id = "box";
+
         this.div.setAttribute(
             "data-box-id",
             `box-${Math.random().toString(36).substr(2, 9)}`
@@ -33,6 +33,7 @@ class Box {
 
     addDragEventListeners() {
         this.div.addEventListener("pointerdown", (e) => {
+            const parentRect = this.div.parentElement.getBoundingClientRect();
             this.OffsetX = e.clientX - this.div.getBoundingClientRect().left;
             this.OffsetY = e.clientY - this.div.getBoundingClientRect().top;
 
@@ -45,25 +46,37 @@ class Box {
     }
 
     pointerMoveHandler(e) {
-        this.div.style.left = `${e.clientX - this.OffsetX}px`;
-        this.div.style.top = `${e.clientY - this.OffsetY}px`;
-
         // Boundaries check for parent
         const parentRect = this.div.parentElement.getBoundingClientRect();
 
-        if (e.clientX - this.OffsetX <= 0) {
+        if (e.clientX - this.OffsetX <= parentRect.left) {
             this.div.style.left = 0;
-        } else if (this.div.getBoundingClientRect().right >= parentRect.width) {
-            this.div.style.left = `${parentRect.width - this.div.offsetWidth}px`;
+        } else if (
+            e.clientX - this.OffsetX + this.div.getBoundingClientRect().width >=
+            parentRect.right
+        ) {
+            this.div.style.left = `${
+                parentRect.width - this.div.offsetWidth
+            }px`;
+            console.log(parentRect.right, "-", this.div.offsetWidth);
+        } else {
+            this.div.style.left = `${
+                e.clientX - parentRect.left - this.OffsetX
+            }px`;
         }
 
-        if (e.clientY - this.OffsetY <= 0) {
+        if (e.clientY - this.OffsetY <= parentRect.top) {
             this.div.style.top = 0;
         } else if (
-            this.div.getBoundingClientRect().bottom >= parentRect.height
+            e.clientY - this.OffsetY + this.div.getBoundingClientRect().height >
+            parentRect.bottom
         ) {
             this.div.style.top = `${
                 parentRect.height - this.div.offsetHeight
+            }px`;
+        } else {
+            this.div.style.top = `${
+                e.clientY - parentRect.top - this.OffsetY
             }px`;
         }
     }
@@ -77,13 +90,18 @@ class Box {
 const parent1 = new Parent();
 const box1 = new Box(parent1);
 
-const box2 = new Box(parent1)
+const parent2 = new Parent();
+const box2 = new Box(parent2);
 
+const parent3 = new Parent();
+const box3 = new Box(parent3);
 
+const parent4 = new Parent();
+const box4 = new Box(parent4);
 
 window.onresize = () => {
-    document.querySelectorAll('.parent').forEach(parent => {
-        parent.querySelectorAll('.box').forEach(box => {
+    document.querySelectorAll(".parent").forEach((parent) => {
+        parent.querySelectorAll(".box").forEach((box) => {
             const parentRect = parent.getBoundingClientRect();
             const boxRect = box.getBoundingClientRect();
 
