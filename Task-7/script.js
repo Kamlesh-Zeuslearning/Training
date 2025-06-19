@@ -25,23 +25,31 @@ class Box {
         );
 
         parent.appendBox(this);
-        this.initDragEvents();
 
-        this.offsetX = 0;
-        this.offsetY = 0;
+        let randomLeft = Math.floor(Math.random() * parent.div.offsetWidth) + 1;
+        let randomTop = Math.floor(Math.random() * parent.div.offsetHeight) + 1;
+
+        this.div.style.left =
+            randomLeft + 50 > parent.div.offsetWidth
+                ? `${randomLeft - 50}px`
+                : `${randomLeft}px`;
+        this.div.style.top =
+            randomTop + 50 > parent.div.offsetHeight
+                ? `${randomTop - 50}px`
+                : `${randomTop}px`;
     }
-
-    initDragEvents(){
-        this.div.addEventListener("pointerdown", (e) => {
-            const rect = this.div.getBoundingClientRect();
-            offsetX = e.clientX - rect.left;
-            offsetY = e.clientY - rect.top;
-            activeBox = this.div;
-        });
-    }
-
 }
 
+document.addEventListener("pointerdown", (e) => {
+    if (e.target.classList.contains("box")) {
+        activeBox = e.target;
+        const rect = activeBox.getBoundingClientRect();
+        offsetX = e.clientX - rect.left;
+        offsetY = e.clientY - rect.top;
+
+        activeBox.setPointerCapture(e.pointerId);
+    }
+});
 
 document.addEventListener("pointermove", (e) => {
     if (!activeBox) return;
@@ -62,7 +70,8 @@ document.addEventListener("pointermove", (e) => {
     activeBox.style.top = `${top}px`;
 });
 
-document.addEventListener("pointerup", () => {
+document.addEventListener("pointerup", (e) => {
+    activeBox.releasePointerCapture(e.pointerId); // 🔑 Release
     activeBox = null;
 });
 

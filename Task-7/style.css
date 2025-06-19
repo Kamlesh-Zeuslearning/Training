@@ -9,6 +9,13 @@ body {
     height: 100dvh;
     width: 100dvw;
     overflow: hidden;
+    /* background-color: #000000; */
+    opacity: 1;
+    background-image: radial-gradient(
+        #38461a 0.35000000000000003px,
+        #000000 0.35000000000000003px
+    );
+    background-size: 7px 7px;
 }
 
 #wrapper {
@@ -28,10 +35,19 @@ body {
     height: 50px;
     width: 50px;
     position: absolute;
+    /* background: rgba(238, 155, 0, 0.51);
+    border-radius: 1px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid rgba(238, 155, 0, 0.3); */
+
+    /* From https://css.glass */
     background: rgba(238, 155, 0, 0.51);
     border-radius: 1px;
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
-    border: 1px solid rgba(238, 155, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    cursor: grab;
 }
