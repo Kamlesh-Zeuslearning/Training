@@ -1,9 +1,16 @@
+let cellWidth = 50;
+let cellHeight = 20;
+
+let canvasWidth = cellWidth*30
+let canvasHeight = (cellHeight*30)  
+
 function drawGrid(context) {
     //draw cells
     for (let i = 0; i < 30; i++) {
         for (let j = 0; j < 30; j++) {
-            context.rect(i * 60, 40 * j, 60, 40);
-            context.fillText(`(${j},${i})`, i * 60 + 10, j * 40 + 10);
+            context.lineWidth = 1;
+            context.rect((i * cellWidth)+0.5, (cellHeight * j)+0.5, cellWidth, cellHeight);
+            context.fillText(`(${j},${i})`, i * cellWidth + 10, j * cellHeight + 10);
         }
     }
     context.stroke();
@@ -11,8 +18,8 @@ function drawGrid(context) {
 }
 
 document.addEventListener("mousedown", (e) => {
-    let col = Math.trunc(e.offsetX / 40);
-    let row = Math.trunc(e.offsetY / 40);
+    let col = Math.trunc(e.offsetX / cellWidth);
+    let row = Math.trunc(e.offsetY / cellHeight);
     console.log(e.clientX, " column: ", col, " ; ", e.clientY, " row: ", row);
 });
 
@@ -25,22 +32,28 @@ function createCanvas(id, width, height) {
     const container = document.getElementById("container");
     container.appendChild(canvas);
 
-    const ctx = canvas.getContext("2d");
+    ctx = resizeCanvasForDPR(canvas, width, height); 
+    
     ctx.beginPath();
-    num++;
+    ctx.lineWidth = 1;
+    // num++;
     drawGrid(ctx);
 }
 
+
+
 // Function to create multiple canvases
 function createMultipleCanvases(numCanvases) {
-    const width = 1800;
-    const height = 1200;
+    const width = canvasWidth;
+    const height = canvasHeight;
 
     for (let i = 1; i <= numCanvases; i++) {
         createCanvas(`canvas_${i}`, width, height);
     }
     
 }
+
+createMultipleCanvases(11)//FOR ~100000 ROWS; IN 1 canvas = 30 rows 
 
 let num = 0;
 function callFunctionRepeatedly(count, delay) {
@@ -59,4 +72,24 @@ function callFunctionRepeatedly(count, delay) {
 }
 
 // Call function x times with y delay
-callFunctionRepeatedly(50, 200);
+// callFunctionRepeatedly(50, 200);
+
+
+
+function resizeCanvasForDPR(canvas, width, height) {
+  const dpr = window.devicePixelRatio || 1;
+
+  // Set canvas drawing buffer size (in physical pixels)
+  canvas.width = width * dpr;
+  canvas.height = height * dpr;
+
+  // Set canvas display size (in CSS pixels)
+  canvas.style.width = `${width}px`;
+  canvas.style.height = `${height}px`;
+
+  // Scale the context so drawings scale properly
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+
+  return ctx;
+}
