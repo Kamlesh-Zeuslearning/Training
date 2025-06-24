@@ -1,19 +1,30 @@
-*{
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-body{
-    padding: 40px;
+body {
+    padding: 20px;
+    font-family: sans-serif;
 }
 
-.container{
-    height: 90dvh;
+#scrollContainer {
+    width: 95%;
+    height: 600px;
     overflow: auto;
-    line-height: 0;
+    position: relative;
+    border: 1px solid #ccc;
 }
 
-.canvas{
-    overflow: scroll;
+#fakeContent {
+    height: calc(100000 * 20px); /*🚨 2 million pixels tall */
+    width: calc(1000 * 50px);
+}
+
+canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10;
 }

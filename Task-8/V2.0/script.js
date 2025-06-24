@@ -1,78 +1,97 @@
-let cellWidth = 50;
-let cellHeight = 20;
+// Configuration
+const cellWidth = 50;
+const cellHeight = 20;
 
-let canvasWidth = (cellWidth * 30);
-let canvasHeight = (cellHeight * 30);
+const totalRows = 100000;
+const totalCols = 1000;
 
-function createCanvas(id, width, height) {
+const visibleRows = 30;
+const visibleCols = 30;
+
+const canvasWidth = cellWidth * visibleCols;
+const canvasHeight = cellHeight * visibleRows;
+
+// Create canvas
+function setupCanvas() {
     const canvas = document.createElement("canvas");
-    canvas.id = id;
-    canvas.width = width;
-    canvas.height = height;
-
-    const container = document.getElementById("container");
-    container.appendChild(canvas);
-
-    ctx = resizeCanvasForDPR(canvas, width, height);
-
-    ctx.beginPath();
-    ctx.lineWidth = 1;
-    drawGrid(ctx);
-}
-
-
-// Function to create multiple canvases
-function createMultipleCanvases(numCanvases) {
-    const width = canvasWidth;
-    const height = canvasHeight;
-
-    for (let i = 1; i <= numCanvases; i++) {
-        createCanvas(`canvas_${i}`, width, height);
-    }
-    
-}
-
-createMultipleCanvases(11)//FOR ~100000 ROWS; IN 1 canvas = 30 rows 
-
-function drawGrid(ctx) {
-    // draw col
-    for (let i = 0; i <= 30; i++) {
-        ctx.moveTo((i * cellWidth)+0.5, 0);
-        ctx.lineTo((i * cellWidth)+0.5, cellHeight * 30);
-    }
-
-    for (let i = 0; i <= 30; i++) {
-        ctx.moveTo(0, (i*cellHeight)+0.5);
-        ctx.lineTo(canvasWidth, (i*cellHeight)+0.5);
-    }
-    // Draw the Path
-    ctx.stroke();
-}
-
-function resizeCanvasForDPR(canvas, width, height) {
     const dpr = window.devicePixelRatio || 1;
+    canvas.width = canvasWidth * dpr;
+    canvas.height = canvasHeight * dpr;
 
-    // Set canvas drawing buffer size (in physical pixels)
-    canvas.width = width * dpr;
-    canvas.height = height * dpr;
+    canvas.style.width = canvasWidth + "px";
+    canvas.style.height = canvasHeight + "px";
 
-    // Set canvas display size (in CSS pixels)
-    canvas.style.width = `${width}px`;
-    canvas.style.height = `${height}px`;
-
-    // Scale the context so drawings scale properly
     const ctx = canvas.getContext("2d");
     ctx.scale(dpr, dpr);
 
-    return ctx;
+    document.getElementById("container").appendChild(canvas);
+    return { canvas, ctx };
 }
 
+const { canvas, ctx } = setupCanvas();
+const scrollContainer = document.getElementById("scrollContainer");
 
+// Draw grid for visible rows
+function drawVisibleGrid(startRow, startCol) {
+    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
+    // Draw horizontal lines
+    ctx.beginPath();
+    ctx.strokeStyle = "#ccc";
+    for (let r = 0; r <= visibleRows; r++) {
+        const y = r * cellHeight;
+        ctx.moveTo(0, y + 0.5);
+        ctx.lineTo(canvasWidth, y + 0.5);
+    }
 
-//print cell numbrin
-document.addEventListener("mousedown", (e) => {
-    let col = Math.trunc(e.offsetX / cellWidth);
-    let row = Math.trunc(e.offsetY / cellHeight);
-    console.log(e.clientX, " column: ", col, " ; ", e.clientY, " row: ", row);
+    // Draw vertical lines
+    for (let c = 0; c <= visibleCols; c++) {
+        const x = c * cellWidth;
+        ctx.moveTo(x + 0.5, 0);
+        ctx.lineTo(x + 0.5, canvasHeight);
+    }
+    ctx.stroke();
+
+    // Draw text content
+    ctx.font = "12px Arial";
+    ctx.fillStyle = "#000";
+
+    for (let r = 0; r < visibleRows; r++) {
+        const rowIndex = startRow + r;
+        //   if (rowIndex >= totalRows) break;
+
+        for (let c = 0; c < visibleCols; c++) {
+            const colIndex = startCol + c;
+            if (colIndex >= totalCols) break;
+            
+            const text = `R${rowIndex}C${colIndex}`;
+            ctx.fillText(text, c * cellWidth + 5, r * cellHeight + 15);
+        }
+    }
+}
+
+// Scroll handler
+scrollContainer.addEventListener("scroll", () => {
+    const scrollTop = scrollContainer.scrollTop;
+    const scrollLeft = scrollContainer.scrollLeft;
+    
+    if(scrollLeft >= 50000){
+        return
+    }
+    console.log(scrollLeft);
+
+    const startRow = Math.floor(scrollTop / cellHeight);
+    const startCol = Math.floor(scrollLeft / cellWidth);
+
+    //calculation for position of canvas while scrolling
+    const canvasTop = startRow * cellHeight;
+    const canvasLeft = startCol * cellWidth;
+
+    canvas.style.top = `${canvasTop}px`; //for setting positon for canvas as it is absolute
+    canvas.style.left = `${canvasLeft}px`;
+
+    drawVisibleGrid(startRow, startCol);
 });
+
+// Initial render
+drawVisibleGrid(0, 0);
