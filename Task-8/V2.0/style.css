@@ -11,6 +11,7 @@ body{
 .container{
     height: 90dvh;
     overflow: auto;
+    line-height: 0;
 }
 
 .canvas{

@@ -2,7 +2,7 @@ let cellWidth = 50;
 let cellHeight = 20;
 
 let canvasWidth = (cellWidth * 30);
-let canvasHeight = (cellHeight * 30)+1;
+let canvasHeight = (cellHeight * 30);
 
 function createCanvas(id, width, height) {
     const canvas = document.createElement("canvas");
@@ -20,7 +20,6 @@ function createCanvas(id, width, height) {
     drawGrid(ctx);
 }
 
-// createCanvas("01", canvasWidth, canvasWidth);
 
 // Function to create multiple canvases
 function createMultipleCanvases(numCanvases) {
