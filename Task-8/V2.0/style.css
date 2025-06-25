@@ -5,13 +5,13 @@
 }
 
 body {
-    padding: 20px;
+    /* padding: 20px; */
     font-family: sans-serif;
 }
 
 #scrollContainer {
-    width: 95%;
-    height: 600px;
+    width: 100vw;
+    height: 100vh;
     overflow: auto;
     position: relative;
     border: 1px solid #ccc;
@@ -29,8 +29,25 @@ body {
     z-index: 10;
 }
 
-#rowHeader canvas{
+#rowHeader canvas {
     position: absolute;
     z-index: 11;
     background-color: rgb(227, 236, 234);
+    top: 20px;
+}
+
+#colHeader canvas {
+    position: absolute;
+    z-index: 11;
+    background-color: rgb(227, 236, 234);
+    left: 50px;
+}
+
+#topLeft {
+    position: absolute;
+    z-index: 13;
+    background-color: rgb(227, 236, 234);
+    height: 20px;
+    width: 50px;
+    border: 1px solid #ccc;
 }

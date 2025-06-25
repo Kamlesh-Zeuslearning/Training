@@ -5,8 +5,8 @@ const cellHeight = 20;
 const totalRows = 100000;
 const totalCols = 1000;
 
-const visibleRows = 32;
-const visibleCols = 30;
+const visibleRows = 40;
+const visibleCols = 35;
 
 const canvasWidth = cellWidth * visibleCols;
 const canvasHeight = cellHeight * visibleRows;
@@ -70,6 +70,8 @@ function drawVisibleGrid(startRow, startCol) {
     }
 }
 
+const topLeft = document.getElementById("topLeft");
+
 // Scroll handler
 scrollContainer.addEventListener("scroll", () => {
     const scrollTop = scrollContainer.scrollTop;
@@ -89,14 +91,23 @@ scrollContainer.addEventListener("scroll", () => {
 
     canvas.style.top = `${canvasTop + 20}px`; //for setting positon for canvas as it is absolute
     canvas.style.left = `${canvasLeft + 50}px`;
-    
-    //setting position of rowHeader
-    rowCanvas.style.top = `${canvasTop}px`;
-    rowCanvas.style.left = `${scrollLeft}px`;
-    
-    
+
     drawVisibleGrid(startRow, startCol);
+
+    //setting position of rowHeader
+    rowCanvas.style.top = `${canvasTop + cellHeight}px`;
+    rowCanvas.style.left = `${scrollLeft}px`;
+
     drawRowHeader(startRow);
+
+    //setting position of colHeader
+    colCanvas.style.top = `${scrollTop}px`;
+    colCanvas.style.left = `${canvasLeft + cellWidth}px`;
+    drawColHeader(startCol);
+
+    //setting position for topLeft
+    topLeft.style.top = `${scrollTop}px`;
+    topLeft.style.left = `${scrollLeft}px`;
 });
 
 // Initial render
@@ -138,12 +149,62 @@ function drawRowHeader(startRow) {
         ctxRow.lineTo(50, y + 0.5);
     }
 
-    ctxRow.moveTo(cellWidth-0.5, 0)
-    ctxRow.lineTo(cellWidth-0.5, canvasHeight)
+    ctxRow.moveTo(cellWidth - 0.5, 0);
+    ctxRow.lineTo(cellWidth - 0.5, canvasHeight);
     ctxRow.stroke();
 
-    for(let r=0; r<visibleRows; r++){
+    for (let r = 0; r < visibleRows; r++) {
         const rowIndex = startRow + r;
-        ctxRow.fillText(rowIndex, 5, r*cellHeight+15);
+        ctxRow.textAlign = "end";
+        ctxRow.fillText(rowIndex, cellWidth - 5, r * cellHeight + 15);
     }
 }
+
+/* -------   col header ----------*/
+
+const { colCanvas, ctxCol } = setupColHeader();
+drawColHeader(0);
+
+function setupColHeader() {
+    const colCanvas = document.createElement("canvas");
+    const dpr = window.devicePixelRatio || 1;
+    colCanvas.width = cellWidth * visibleCols * dpr;
+    colCanvas.height = cellHeight * dpr;
+
+    colCanvas.style.width = cellWidth * visibleCols + "px";
+    colCanvas.style.height = cellHeight + "px";
+
+    const ctxCol = colCanvas.getContext("2d");
+    ctxCol.scale(dpr, dpr);
+
+    document.getElementById("colHeader").appendChild(colCanvas);
+
+    return { colCanvas, ctxCol };
+}
+
+function drawColHeader(startCol) {
+    ctxCol.clearRect(0, 0, 50 * visibleCols, 20);
+    ctxCol.beginPath();
+    ctxCol.strokeStyle = "#ccc";
+
+    //draw vertical lines
+    for (let c = 0; c < visibleCols; c++) {
+        const x = c * cellWidth;
+        ctxCol.moveTo(x + 0.5, 0);
+        ctxCol.lineTo(x + 0.5, cellHeight);
+    }
+
+    ctxCol.moveTo(0, cellHeight - 0.5);
+    ctxCol.lineTo(cellWidth * visibleCols, cellHeight - 0.5);
+    ctxCol.stroke();
+
+    //draw text content
+    ctxCol.font = "12px Arial";
+    ctxCol.fillStyle = "#000";
+    for (let c = 0; c < visibleCols; c++) {
+        const colIndex = startCol + c;
+        ctxCol.textAlign = "center";
+        ctxCol.fillText(colIndex, c * cellWidth + cellWidth / 2, 15);
+    }
+}
+
