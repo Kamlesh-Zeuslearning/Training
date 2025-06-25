@@ -5,7 +5,7 @@ const cellHeight = 20;
 const totalRows = 100000;
 const totalCols = 1000;
 
-const visibleRows = 30;
+const visibleRows = 32;
 const visibleCols = 30;
 
 const canvasWidth = cellWidth * visibleCols;
@@ -63,7 +63,7 @@ function drawVisibleGrid(startRow, startCol) {
         for (let c = 0; c < visibleCols; c++) {
             const colIndex = startCol + c;
             if (colIndex >= totalCols) break;
-            
+
             const text = `R${rowIndex}C${colIndex}`;
             ctx.fillText(text, c * cellWidth + 5, r * cellHeight + 15);
         }
@@ -74,11 +74,11 @@ function drawVisibleGrid(startRow, startCol) {
 scrollContainer.addEventListener("scroll", () => {
     const scrollTop = scrollContainer.scrollTop;
     const scrollLeft = scrollContainer.scrollLeft;
-    
-    if(scrollLeft >= 50000){
-        return
+
+    if (scrollLeft >= 50000) {
+        return;
     }
-    console.log(scrollLeft);
+    // console.log(scrollLeft);
 
     const startRow = Math.floor(scrollTop / cellHeight);
     const startCol = Math.floor(scrollLeft / cellWidth);
@@ -87,11 +87,63 @@ scrollContainer.addEventListener("scroll", () => {
     const canvasTop = startRow * cellHeight;
     const canvasLeft = startCol * cellWidth;
 
-    canvas.style.top = `${canvasTop}px`; //for setting positon for canvas as it is absolute
-    canvas.style.left = `${canvasLeft}px`;
-
+    canvas.style.top = `${canvasTop + 20}px`; //for setting positon for canvas as it is absolute
+    canvas.style.left = `${canvasLeft + 50}px`;
+    
+    //setting position of rowHeader
+    rowCanvas.style.top = `${canvasTop}px`;
+    rowCanvas.style.left = `${scrollLeft}px`;
+    
+    
     drawVisibleGrid(startRow, startCol);
+    drawRowHeader(startRow);
 });
 
 // Initial render
 drawVisibleGrid(0, 0);
+
+/* -------   row header ----------*/
+
+function setupRowHeader() {
+    const rowCanvas = document.createElement("canvas");
+    const dpr = window.devicePixelRatio || 1;
+    rowCanvas.width = 50 * dpr;
+    rowCanvas.height = 20 * visibleRows * dpr;
+
+    rowCanvas.style.width = 50 + "px";
+    rowCanvas.style.height = 20 * visibleRows + "px";
+
+    const ctxRow = rowCanvas.getContext("2d");
+    ctxRow.scale(dpr, dpr);
+
+    document.getElementById("rowHeader").appendChild(rowCanvas);
+
+    return { rowCanvas, ctxRow };
+}
+
+// setupRowHeader()
+
+const { rowCanvas, ctxRow } = setupRowHeader();
+drawRowHeader(0);
+
+function drawRowHeader(startRow) {
+    ctxRow.clearRect(0, 0, 50, canvasHeight);
+    ctxRow.beginPath();
+    ctxRow.strokeStyle = "#ccc";
+
+    //draw horizontal lines
+    for (let r = 0; r < visibleRows; r++) {
+        const y = r * cellHeight;
+        ctxRow.moveTo(0, y + 0.5);
+        ctxRow.lineTo(50, y + 0.5);
+    }
+
+    ctxRow.moveTo(cellWidth-0.5, 0)
+    ctxRow.lineTo(cellWidth-0.5, canvasHeight)
+    ctxRow.stroke();
+
+    for(let r=0; r<visibleRows; r++){
+        const rowIndex = startRow + r;
+        ctxRow.fillText(rowIndex, 5, r*cellHeight+15);
+    }
+}

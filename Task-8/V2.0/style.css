@@ -18,13 +18,19 @@ body {
 }
 
 #fakeContent {
-    height: calc(100000 * 20px); /*🚨 2 million pixels tall */
-    width: calc(1000 * 50px);
+    max-height: calc(100000 * 20px); /*🚨 2 million pixels tall */
+    max-width: calc(1000 * 50px);
 }
 
-canvas {
+#container canvas {
     position: absolute;
-    top: 0;
-    left: 0;
+    top: 20px;
+    left: 50px;
     z-index: 10;
+}
+
+#rowHeader canvas{
+    position: absolute;
+    z-index: 11;
+    background-color: rgb(227, 236, 234);
 }
