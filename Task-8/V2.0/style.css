@@ -24,8 +24,8 @@ body {
 
 #container canvas {
     position: absolute;
-    top: 20px;
-    left: 50px;
+    top: 30px;
+    left: 70px;
     z-index: 10;
 }
 
@@ -33,21 +33,21 @@ body {
     position: absolute;
     z-index: 11;
     background-color: rgb(227, 236, 234);
-    top: 20px;
+    top: 30px;
 }
 
 #colHeader canvas {
     position: absolute;
     z-index: 11;
     background-color: rgb(227, 236, 234);
-    left: 50px;
+    left: 70px;
 }
 
 #topLeft {
     position: absolute;
     z-index: 13;
     background-color: rgb(227, 236, 234);
-    height: 20px;
-    width: 50px;
+    height: 30px;
+    width: 70px;
     border: 1px solid #ccc;
 }
