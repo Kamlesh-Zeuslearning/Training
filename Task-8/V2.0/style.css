@@ -49,5 +49,6 @@ body {
     background-color: rgb(227, 236, 234);
     height: 30px;
     width: 70px;
-    border: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    border-right: 1px solid #ccc;
 }
