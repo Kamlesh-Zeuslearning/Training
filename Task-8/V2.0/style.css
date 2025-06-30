@@ -31,14 +31,14 @@ body {
 
 #rowHeader canvas {
     position: absolute;
-    z-index: 11;
+    z-index: 12;
     background-color: rgb(227, 236, 234);
     top: 30px;
 }
 
 #colHeader canvas {
     position: absolute;
-    z-index: 11;
+    z-index: 12;
     background-color: rgb(227, 236, 234);
     left: 70px;
 }
@@ -51,4 +51,18 @@ body {
     width: 70px;
     border-bottom: 1px solid #ccc;
     border-right: 1px solid #ccc;
+}
+
+
+input{
+    display: none;
+    z-index: 11;
+    font-size: 12px;
+    position: absolute;
+    border: 1px solid rgb(0, 177, 0);
+    outline: none;
+    top: 30px;
+    left: 70px;
+    height: 31px;
+    width: 71px;
 }

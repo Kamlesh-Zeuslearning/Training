@@ -30,6 +30,10 @@ class Spreadsheet {
             this.handleScroll.bind(this)
         ); //adding event listner
 
+        this.selectedCell = null; // Initially no cell selected
+        this.selectedRow = []; // Initially no rows selected
+        this.selectedColumn = []; // Initially no columns selected
+
         // Initial render
         this.grid.draw(0, 0);
         this.rowHeader.draw(0);
@@ -39,6 +43,9 @@ class Spreadsheet {
         this.initColumnResizing();
 
         this.initRowResizing();
+
+        // Adding event listeners for selection
+        this.addSelectionEventListeners();
     }
 
     //function to handle redraw the canvas when scrolling
@@ -211,6 +218,48 @@ class Spreadsheet {
 
     updateAfterResize() {
         this.handleScroll();
+    }
+
+    addSelectionEventListeners() {
+        //for grid
+        this.grid.canvas.addEventListener("mousedown", (e) => {
+            let rowSum = 0;
+            let rect = this.grid.canvas.getBoundingClientRect();
+            let mouseY = e.clientY - rect.top;
+
+            let row = 0;
+            for (let r = 0; r < this.config.visibleRows; r++) {
+                if (rowSum + this.rowHeights[this.currentStartRow + r] > mouseY) {
+                    row = this.currentStartRow + r;
+                    break;
+                }
+                rowSum += this.rowHeights[this.currentStartRow + r];
+            }
+
+            let colSum = 0;
+            let mouseX = e.clientX - rect.left;
+
+            let col = 0;
+            for (let c = 0; c < this.config.visibleCols; c++) {
+                if (colSum + this.colWidths[this.currentStartCol + c] > mouseX) {
+                    col = this.currentStartCol + c;
+                    break;
+                }
+                colSum += this.colWidths[this.currentStartCol + c];
+            }
+
+            let prevRowSum = this.sumHeight(0, this.currentStartRow);
+            let prevColSum = this.sumWidths(0, this.currentStartCol);
+
+            const inputField = document.getElementById("input");
+            inputField.style.top = `${rowSum - 1 + this.config.colHeight + prevRowSum}px`;
+            inputField.style.left = `${colSum - 1 + this.config.rowWidth + prevColSum}px`;//
+            
+            inputField.style.height = `${this.rowHeights[row] + 1}px`;
+            inputField.style.width = `${this.colWidths[col] + 1}px`;
+            inputField.style.display = "block";
+            this.selectedCell = { rowSum, colSum };
+        });
     }
 }
 

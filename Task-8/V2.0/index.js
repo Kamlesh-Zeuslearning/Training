@@ -8,6 +8,8 @@ const config = {
     totalCols: 1000,
     visibleRows: 40,
     visibleCols: 35,
+    rowWidth: 70,
+    colHeight: 30   
 };
 
 
