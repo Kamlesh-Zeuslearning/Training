@@ -48,8 +48,8 @@ class GridCanvas {
                     this.spreadsheet.currentStartRow + r
                 ];
 
-            ctx.moveTo(0, rowSum + 0.5);
-            ctx.lineTo(this.canvasWidth, rowSum + 0.5);
+            ctx.moveTo(0, rowSum - 0.5);
+            ctx.lineTo(this.canvasWidth, rowSum - 0.5);
         }
 
         let colSum = 0;
@@ -59,8 +59,8 @@ class GridCanvas {
                 this.spreadsheet.colWidths[
                     this.spreadsheet.currentStartCol + c
                 ];
-            ctx.moveTo(colSum + 0.5, 0);
-            ctx.lineTo(colSum + 0.5, this.canvasHeight);
+            ctx.moveTo(colSum - 0.5, 0);
+            ctx.lineTo(colSum - 0.5, this.canvasHeight);
         }
 
         ctx.stroke();

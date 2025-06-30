@@ -45,8 +45,8 @@ class RowHeader {
                 this.spreadsheet.rowHeights[
                     this.spreadsheet.currentStartRow + r
                 ];
-            ctx.moveTo(0, rowSum + 0.5);
-            ctx.lineTo(this.config.cellWidth, rowSum + 0.5);
+            ctx.moveTo(0, rowSum - 0.5);
+            ctx.lineTo(this.config.cellWidth, rowSum - 0.5);
         }
 
         //drawing right border for rowHeader

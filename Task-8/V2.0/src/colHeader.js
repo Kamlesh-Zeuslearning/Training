@@ -44,8 +44,8 @@ class ColHeader {
                 this.spreadsheet.colWidths[
                     this.spreadsheet.currentStartCol + c
                 ];
-            ctx.moveTo(colSum + 0.5, 0);
-            ctx.lineTo(colSum + 0.5, this.config.cellHeight);
+            ctx.moveTo(colSum - 0.5, 0);
+            ctx.lineTo(colSum - 0.5, this.config.cellHeight);
         }
 
         // drawing bottom line
