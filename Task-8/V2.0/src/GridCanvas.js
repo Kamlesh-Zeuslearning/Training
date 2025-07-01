@@ -1,5 +1,11 @@
-//main canvas
+/**
+ * GridCanvas is the main canvas for rendering the spreadsheet cells and grid lines.
+ */
 class GridCanvas {
+    /**
+     * Creates an instance of GridCanvas.
+     * @param {Spreadsheet} spreadsheet - The parent spreadsheet instance.
+     */
     constructor(spreadsheet) {
         this.spreadsheet = spreadsheet;
         this.config = spreadsheet.config;
@@ -13,7 +19,11 @@ class GridCanvas {
         document.getElementById("container").appendChild(this.canvas); //add canvas to the html tree
     }
 
-    //function for basic setup of canvas dpr
+    /**
+     * Creates and configures the canvas element.
+     * Sets up device pixel ratio (DPR) for sharp rendering.
+     * @returns {{canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D}} The canvas and its 2D rendering context.
+     */
     createCanvas() {
         const canvas = document.createElement("canvas");
         const dpr = window.devicePixelRatio || 1;
@@ -31,13 +41,22 @@ class GridCanvas {
         return { canvas, ctx };
     }
 
-    //function to draw canvas
+    /**
+     * Draws the grid, cell content, and highlights selected columns.
+     * @param {number} startRow - Index of the first row to render.
+     * @param {number} startCol - Index of the first column to render.
+     */
     draw(startRow, startCol) {
         const { cellWidth, cellHeight, visibleRows, visibleCols, totalCols } =
             this.config;
         const ctx = this.ctx;
         ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
         ctx.beginPath();
+
+        // Highlight selected column and row
+        this.highlightSelectedColumn(startCol);
+        this.highlightSelectedRow(startRow);
+
         ctx.strokeStyle = "#ccc"; //setting grid lines color
 
         let rowSum = 0;
@@ -69,11 +88,9 @@ class GridCanvas {
         ctx.font = "12px Arial";
         ctx.fillStyle = "#000";
 
-
         //drawing text
         rowSum = 0;
         for (let r = 0; r < visibleRows; r++) {
-            
             const rowIndex = startRow + r;
             let colSum = 0;
             for (let c = 0; c < visibleCols; c++) {
@@ -88,14 +105,77 @@ class GridCanvas {
                         this.spreadsheet.currentStartCol + c
                     ];
             }
-            rowSum += this.spreadsheet.rowHeights[this.spreadsheet.currentStartRow + r];
+            rowSum +=
+                this.spreadsheet.rowHeights[
+                    this.spreadsheet.currentStartRow + r
+                ];
         }
     }
 
-    //function to update canvas position
+    /**
+     * Sets the canvas position (top and left offset).
+     * @param {number} top - The top position in pixels.
+     * @param {number} left - The left position in pixels.
+     */
     setPosition(top, left) {
         this.canvas.style.top = `${top}px`;
         this.canvas.style.left = `${left}px`;
+    }
+
+    /**
+     * Highlights the currently selected column in the grid.
+     * @param {number} startCol - The index of the first visible column.
+     */
+    highlightSelectedColumn(startCol) {
+        if (this.spreadsheet.selectedCol === null) return;
+
+        const ctx = this.ctx;
+        const { visibleCols } = this.config;
+        let colSum = 0;
+
+        for (let c = 0; c < visibleCols; c++) {
+            const colIndex = startCol + c;
+            const width =
+                this.spreadsheet.colWidths[
+                    this.spreadsheet.currentStartCol + c
+                ];
+
+            if (colIndex === this.spreadsheet.selectedCol) {
+                ctx.fillStyle = "rgba(173, 216, 230, 0.4)"; // Light blue
+                ctx.fillRect(colSum, 0, width, this.canvasHeight);
+                break;
+            }
+
+            colSum += width;
+        }
+    }
+
+    /**
+     * Highlights the currently selected row in the grid.
+     * @param {number} startRow - The index of the first visible row.
+     */
+    highlightSelectedRow(startRow) {
+        if (this.spreadsheet.selectedRow === null) return;
+
+        const ctx = this.ctx;
+        const { visibleRows } = this.config;
+        let rowSum = 0;
+
+        for (let r = 0; r < visibleRows; r++) {
+            const rowIndex = startRow + r;
+            const height =
+                this.spreadsheet.rowHeights[
+                    this.spreadsheet.currentStartRow + r
+                ];
+
+            if (rowIndex === this.spreadsheet.selectedRow) {
+                ctx.fillStyle = "rgba(173, 216, 230, 0.4)"; // Light blue
+                ctx.fillRect(0, rowSum, this.canvasWidth, height);
+                break;
+            }
+
+            rowSum += height;
+        }
     }
 }
 
