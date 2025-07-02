@@ -95,10 +95,10 @@ class Spreadsheet {
 
         // console.log(this.rowHeader.canvas.style.left, " ", scrollLeft)
         this.rowHeader.setPosition(rowSum + this.config.cellHeight, scrollLeft);
-        this.colHeader.setPosition(scrollTop, colSum + this.config.cellWidth);
+        this.colHeader.setPosition(scrollTop, colSum + this.config.rowWidth);
         this.grid.setPosition(
             rowSum + this.config.cellHeight,
-            colSum + this.config.cellWidth
+            colSum + this.config.rowWidth
         );
         this.topLeft.style.top = `${scrollTop}px`;
         this.topLeft.style.left = `${scrollLeft}px`;

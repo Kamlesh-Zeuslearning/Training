@@ -2,14 +2,14 @@ import Spreadsheet from "./src/spreadsheet.js";
 
 //basic grid dimensions
 const config = {
-    cellWidth: 70,
+    cellWidth: 100,
     cellHeight: 30,
     totalRows: 100000,
     totalCols: 1000,
-    visibleRows: 40,
+    visibleRows: 100,
     visibleCols: 35,
-    rowWidth: 70,
-    colHeight: 30   
+    rowWidth: 50,
+    colHeight: 30 ,  
 };
 
 

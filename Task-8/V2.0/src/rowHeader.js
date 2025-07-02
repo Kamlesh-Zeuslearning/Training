@@ -28,11 +28,11 @@ class RowHeader {
         const canvas = document.createElement("canvas");
         const dpr = window.devicePixelRatio || 1;
 
-        canvas.width = this.config.cellWidth * dpr;
+        canvas.width = this.config.rowWidth * dpr;
 
         canvas.height = this.canvasHeight * dpr;
 
-        canvas.style.width = `${this.config.cellWidth}px`;
+        canvas.style.width = `${this.config.rowWidth}px`;
         canvas.style.height = `${this.canvasHeight}px`;
         canvas.style.position = "absolute";
 
@@ -49,8 +49,8 @@ class RowHeader {
     draw(startRow) {
         const { cellHeight, visibleRows } = this.config;
         const ctx = this.ctx;
-        // console.log(this.config.cellWidth, "hi")
-        ctx.clearRect(0, 0, this.config.cellWidth, this.canvasHeight);
+        // console.log(this.config.rowWidth, "hi")
+        ctx.clearRect(0, 0, this.config.rowWidth, this.canvasHeight);
         ctx.beginPath();
 
         //styles for text
@@ -78,12 +78,12 @@ class RowHeader {
                 ctx.fillRect(
                     0,
                     rowSum - rowHeight,
-                    this.config.cellWidth - 0.5,
+                    this.config.rowWidth - 0.5,
                     rowHeight - 0.5
                 );
                 ctx.fillStyle = " #107C41";
                 ctx.fillRect(
-                    this.config.cellWidth - 3,
+                    this.config.rowWidth - 3,
                     rowSum - rowHeight - 0.5,
                     2,
                     rowHeight
@@ -96,7 +96,7 @@ class RowHeader {
                 ctx.fillRect(
                     0,
                     rowSum - rowHeight,
-                    this.config.cellWidth - 0.5,
+                    this.config.rowWidth - 0.5,
                     rowHeight - 0.5
                 );
             }
@@ -107,7 +107,7 @@ class RowHeader {
                 ctx.fillRect(
                     0,
                     rowSum - rowHeight,
-                    this.config.cellWidth - 0.5,
+                    this.config.rowWidth - 0.5,
                     rowHeight - 0.5
                 );
 
@@ -120,7 +120,7 @@ class RowHeader {
             if (this.spreadsheet.selectedColumn !== null) {
                 ctx.fillStyle = " #195f3a";
             }
-            ctx.fillText(rowIndex, this.config.cellWidth - 5, rowY);
+            ctx.fillText(rowIndex + 1, this.config.rowWidth - 5, rowY);
         }
 
         if (this.spreadsheet.selectedColumn !== null) {
@@ -137,12 +137,12 @@ class RowHeader {
                     this.spreadsheet.currentStartRow + r
                 ];
             ctx.moveTo(0, rowSum - 0.5);
-            ctx.lineTo(this.config.cellWidth, rowSum - 0.5);
+            ctx.lineTo(this.config.rowWidth, rowSum - 0.5);
         }
 
         //drawing right border for rowHeader
-        ctx.moveTo(this.config.cellWidth - 0.5, 0);
-        ctx.lineTo(this.config.cellWidth - 0.5, this.canvasHeight);
+        ctx.moveTo(this.config.rowWidth - 0.5, 0);
+        ctx.lineTo(this.config.rowWidth - 0.5, this.canvasHeight);
         ctx.stroke();
     }
 
