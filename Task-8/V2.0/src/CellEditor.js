@@ -11,16 +11,52 @@ class CellEditor {
 
     initListeners() {
         // Basic input commit on blur (you can expand this for key events later)
-        this.inputField.addEventListener("blur", () => {
-            this.commitInput();
-        });
+        // this.inputField.addEventListener("blur", () => {
+        //     this.commitInput(); // when you change screen it hides
+        // });
 
         // Placeholder: Escape key cancels input
         this.inputField.addEventListener("keydown", (e) => {
+            console.log("Key pressed:", e.key);
             if (e.key === "Escape") {
                 this.inputField.style.display = "none";
+                this.spreadsheet.selectedCell = null;
+                this.spreadsheet.colHeader.draw(
+                    this.spreadsheet.currentStartCol
+                );
+                this.spreadsheet.rowHeader.draw(
+                    this.spreadsheet.currentStartRow
+                );
             }
             // TODO: handle navigation here
+            else if (e.key === "ArrowDown") {
+                this.spreadsheet.selectedCell.row++;
+                this.showEditor(
+                    this.spreadsheet.selectedCell.row,
+                    this.spreadsheet.selectedCell.col
+                );
+            } else if (e.key === "ArrowUp") {
+                this.spreadsheet.selectedCell.row--;
+                this.showEditor(
+                    this.spreadsheet.selectedCell.row,
+                    this.spreadsheet.selectedCell.col
+                );
+            }
+
+            else if(e.key === "ArrowRight"){
+                this.spreadsheet.selectedCell.col++;
+                this.showEditor(
+                    this.spreadsheet.selectedCell.row,
+                    this.spreadsheet.selectedCell.col
+                );
+            }
+            else if (e.key === "ArrowLeft"){
+                this.spreadsheet.selectedCell.col--;
+                this.showEditor(
+                    this.spreadsheet.selectedCell.row,
+                    this.spreadsheet.selectedCell.col
+                );
+            }
         });
     }
 
@@ -44,10 +80,14 @@ class CellEditor {
         this.inputField.style.width = `${colWidths[col]}px`;
         this.inputField.style.display = "block";
 
-        this.inputField.focus();
         this.currentCell = { row, col };
         this.spreadsheet.rowHeader.draw(this.spreadsheet.currentStartRow);
         this.spreadsheet.colHeader.draw(this.spreadsheet.currentStartCol);
+
+        // Give a small delay before focusing
+        setTimeout(() => {
+            this.inputField.focus();
+        }, 0); // 0ms delay to let rendering complete first
     }
 
     /**
@@ -60,8 +100,10 @@ class CellEditor {
             console.log(`Saving value '${value}' to cell (${row}, ${col})`);
             // TODO: save to data model
         }
-        // this.inputField.style.display = "none";
+        this.inputField.style.display = "none";
         this.inputField.value = "";
+        this.spreadsheet.colHeader.draw(this.spreadsheet.currentStartCol);
+        this.spreadsheet.rowHeader.draw(this.spreadsheet.currentStartRow);
     }
 
     hideInput() {
