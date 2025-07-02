@@ -9,10 +9,10 @@ export default class RowResizer {
     constructor(spreadsheet) {
         this.spreadsheet = spreadsheet;
         this.rowResize = false; // Indicates if resizing is in progress
-        this.rowIndex = null;   // The index of the row being resized
-        this.startY = 0;        // The initial Y position when resizing starts
+        this.rowIndex = null; // The index of the row being resized
+        this.startY = 0; // The initial Y position when resizing starts
         this.startRowHeight = 0; // The initial height of the row
-        this.threshold = 5;     // The threshold distance (in pixels) for detecting resize handles
+        this.threshold = 5; // The threshold distance (in pixels) for detecting resize handles
 
         // Initialize event listeners
         this.addEventListeners();
@@ -29,10 +29,14 @@ export default class RowResizer {
         const rowHeaderCanvas = this.spreadsheet.rowHeader.canvas;
 
         // Detect mouse movement near row resize handles
-        rowHeaderCanvas.addEventListener("mousemove", (e) => this.onMouseMove(e));
+        rowHeaderCanvas.addEventListener("mousemove", (e) =>
+            this.onMouseMove(e)
+        );
 
         // Start resizing when mouse is pressed
-        rowHeaderCanvas.addEventListener("mousedown", (e) => this.onMouseDown(e));
+        rowHeaderCanvas.addEventListener("mousedown", (e) =>
+            this.onMouseDown(e)
+        );
 
         // End resizing when mouse is released
         window.addEventListener("mouseup", () => this.onMouseUp());
@@ -44,7 +48,7 @@ export default class RowResizer {
     /**
      * Handles mouse movement to detect if the mouse is near a row resize handle.
      * Updates the cursor to indicate resizing.
-     * 
+     *
      * @param {MouseEvent} e - The mouse move event
      */
     onMouseMove(e) {
@@ -57,7 +61,10 @@ export default class RowResizer {
 
         // Check if the mouse is near any row header for resizing
         for (let i = 0; i < this.spreadsheet.config.visibleRows; i++) {
-            rowSum += this.spreadsheet.rowHeights[this.spreadsheet.currentStartRow + i];
+            rowSum +=
+                this.spreadsheet.rowHeights[
+                    this.spreadsheet.currentStartRow + i
+                ];
             if (Math.abs(rowSum - mouseY) < this.threshold) {
                 this.rowIndex = this.spreadsheet.currentStartRow + i;
                 break;
@@ -65,20 +72,20 @@ export default class RowResizer {
         }
 
         // Update the cursor style based on whether a resize is detected
-        this.spreadsheet.rowHeader.canvas.style.cursor = 
+        this.spreadsheet.rowHeader.canvas.style.cursor =
             this.rowIndex === null ? "default" : "row-resize";
     }
 
     /**
      * Handles mouse down event to start resizing a row.
-     * 
+     *
      * @param {MouseEvent} e - The mouse down event
      */
     onMouseDown(e) {
         if (this.rowIndex == null) return; // Only proceed if a row is selected for resizing
 
         this.rowResize = true;
-        this.startY = e.clientY;  // Store the initial mouse Y position
+        this.startY = e.clientY; // Store the initial mouse Y position
         this.startRowHeight = this.spreadsheet.rowHeights[this.rowIndex]; // Store the initial row height
     }
 
@@ -87,26 +94,36 @@ export default class RowResizer {
      */
     onMouseUp() {
         if (this.rowResize) {
-            this.rowResize = false;  // Stop resizing
-            this.rowIndex = null;    // Clear the row index
+            this.rowResize = false; // Stop resizing
+            this.rowIndex = null; // Clear the row index
         }
     }
 
     /**
      * Handles mouse move event while resizing a row.
      * Updates the row height as the mouse moves.
-     * 
+     *
      * @param {MouseEvent} e - The mouse move event
      */
     onMouseResize(e) {
         if (!this.rowResize) return; // If not resizing, skip
 
-        const delta = e.clientY - this.startY;  // Calculate the distance moved by the mouse
-        const newHeight = this.startRowHeight + delta;  // Calculate new row height
+        window.requestAnimationFrame(() => {
+            const delta = e.clientY - this.startY; // Calculate the distance moved by the mouse
+            const newHeight = this.startRowHeight + delta; // Calculate new row height
 
-        if (newHeight > 20) {  // Set a minimum height constraint
-            this.spreadsheet.rowHeights[this.rowIndex] = newHeight;
-            this.spreadsheet.updateAfterResize();  // Update the view after resizing
-        }
+            if (newHeight > 20) {
+                // Set a minimum height constraint
+                this.spreadsheet.rowHeights[this.rowIndex] = newHeight;
+                this.spreadsheet.updateAfterResize(); // Update the view after resizing
+                let selectedCell = this.spreadsheet.selectedCell;
+                if (selectedCell) {
+                    this.spreadsheet.cellEditor.showEditor(
+                        selectedCell.row,
+                        selectedCell.col
+                    ); //resize celleditor
+                }
+            }
+        });
     }
 }

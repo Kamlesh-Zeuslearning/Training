@@ -68,10 +68,16 @@ export default class ColumnResizer {
         window.requestAnimationFrame(() => {
             const delta = e.clientX - this.startX;
             const newWidth = this.startColWidth + delta;
-
             if (newWidth > 20) {
                 this.spreadsheet.colWidths[this.colIndex] = newWidth;
                 this.spreadsheet.updateAfterResize();
+                let selectedCell = this.spreadsheet.selectedCell;
+                if (selectedCell) {
+                    this.spreadsheet.cellEditor.showEditor(
+                        selectedCell.row,
+                        selectedCell.col
+                    ); //resize celleditor
+                }
             }
         });
     }

@@ -127,7 +127,7 @@ class GridCanvas {
      * @param {number} startCol - The index of the first visible column.
      */
     highlightSelectedColumn(startCol) {
-        if (this.spreadsheet.selectedCol === null) return;
+        if (this.spreadsheet.selectedColumn === null) return;
 
         const ctx = this.ctx;
         const { visibleCols } = this.config;
@@ -140,8 +140,8 @@ class GridCanvas {
                     this.spreadsheet.currentStartCol + c
                 ];
 
-            if (colIndex === this.spreadsheet.selectedCol) {
-                ctx.fillStyle = "rgba(173, 216, 230, 0.4)"; // Light blue
+            if (colIndex === this.spreadsheet.selectedColumn) {
+                ctx.fillStyle = "#E8F2EC"; // Light blue
                 ctx.fillRect(colSum, 0, width, this.canvasHeight);
                 break;
             }
@@ -169,7 +169,7 @@ class GridCanvas {
                 ];
 
             if (rowIndex === this.spreadsheet.selectedRow) {
-                ctx.fillStyle = "rgba(173, 216, 230, 0.4)"; // Light blue
+                ctx.fillStyle = "#E8F2EC"; // Light blue
                 ctx.fillRect(0, rowSum, this.canvasWidth, height);
                 break;
             }

@@ -53,8 +53,83 @@ class RowHeader {
         ctx.clearRect(0, 0, this.config.cellWidth, this.canvasHeight);
         ctx.beginPath();
 
-        ctx.strokeStyle = "#ccc";
+        //styles for text
+        ctx.font = "12px Arial";
+        ctx.textAlign = "end";
+        ctx.textBaseline = "middle";
+
         let rowSum = 0;
+        for (let r = 0; r < visibleRows; r++) {
+            const rowIndex = startRow + r;
+            const rowHeight =
+                this.spreadsheet.rowHeights[
+                    this.spreadsheet.currentStartRow + r
+                ];
+            rowSum += rowHeight;
+            const rowY = rowSum - rowHeight / 2;
+
+            //if cell is selected
+
+            if (
+                this.spreadsheet.selectedCell &&
+                this.spreadsheet.selectedCell.row == rowIndex
+            ) {
+                ctx.fillStyle = " #CAEAD8"; // highlight color
+                ctx.fillRect(
+                    0,
+                    rowSum - rowHeight,
+                    this.config.cellWidth - 0.5,
+                    rowHeight - 0.5
+                );
+                ctx.fillStyle = " #107C41";
+                ctx.fillRect(
+                    this.config.cellWidth - 3,
+                    rowSum - rowHeight - 0.5,
+                    2,
+                    rowHeight
+                );
+            }
+
+            //if col is selected
+            if (this.spreadsheet.selectedColumn !== null) {
+                ctx.fillStyle = " #CAEAD8"; // highlight color
+                ctx.fillRect(
+                    0,
+                    rowSum - rowHeight,
+                    this.config.cellWidth - 0.5,
+                    rowHeight - 0.5
+                );
+            }
+
+            //if this row is selected,  highlight it
+            if (rowIndex === this.spreadsheet.selectedRow) {
+                ctx.fillStyle = " #107C41"; // highlight color
+                ctx.fillRect(
+                    0,
+                    rowSum - rowHeight,
+                    this.config.cellWidth - 0.5,
+                    rowHeight - 0.5
+                );
+
+                ctx.font = "bold 14px Segoe UI, sans-serif";
+                ctx.fillStyle = "#FFF"; // Text color on highlight
+            } else {
+                ctx.font = "14px Arial";
+                ctx.fillStyle = " #000"; // Regular text color
+            }
+            if (this.spreadsheet.selectedColumn !== null) {
+                ctx.fillStyle = " #195f3a";
+            }
+            ctx.fillText(rowIndex, this.config.cellWidth - 5, rowY);
+        }
+
+        if (this.spreadsheet.selectedColumn !== null) {
+            ctx.strokeStyle = " #9BC3AE";
+        } else {
+            ctx.strokeStyle = "#ccc";
+        }
+
+        rowSum = 0;
         //drawing horizontal lines
         for (let r = 0; r < visibleRows; r++) {
             rowSum +=
@@ -69,37 +144,6 @@ class RowHeader {
         ctx.moveTo(this.config.cellWidth - 0.5, 0);
         ctx.lineTo(this.config.cellWidth - 0.5, this.canvasHeight);
         ctx.stroke();
-
-        //styles for text
-        ctx.font = "12px Arial";
-        ctx.textAlign = "end";
-
-        rowSum = 0;
-        for (let r = 0; r < visibleRows; r++) {
-            const rowIndex = startRow + r;
-            const rowHeight =
-                this.spreadsheet.rowHeights[
-                    this.spreadsheet.currentStartRow + r
-                ];
-            rowSum += rowHeight;
-            const rowY = rowSum - rowHeight / 2;
-
-            //if this row is selected,  highlight it
-            if (rowIndex === this.spreadsheet.selectedRow) {
-                ctx.fillStyle = "rgba(173, 216, 230, 0.4)";
-                ctx.fillRect(
-                    0,
-                    rowSum - rowHeight,
-                    this.config.cellWidth,
-                    rowHeight
-                );
-                ctx.fillStyle = "#FFF"; // Text color on highlight
-            } else {
-                ctx.fillStyle = "#000"; // Regular text color
-            }
-
-            ctx.fillText(rowIndex, this.config.cellWidth - 5, rowY);
-        }
     }
 
     /**
@@ -153,7 +197,12 @@ class RowHeader {
                         this.spreadsheet.currentStartRow,
                         this.spreadsheet.currentStartCol
                     );
+                    this.spreadsheet.selectedCell = null;
+                    this.spreadsheet.cellEditor.hideInput();
                     this.draw(this.spreadsheet.currentStartRow);
+                    this.spreadsheet.colHeader.draw(
+                        this.spreadsheet.currentStartCol
+                    );
                 }
                 break;
             }

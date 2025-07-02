@@ -1,10 +1,9 @@
 import ColHeader from "./colHeader.js";
 import RowHeader from "./rowHeader.js";
 import GridCanvas from "./GridCanvas.js";
-import CellEditor from "./CellEditor.js"; 
-import ColumnResizer from './ColumnResizer.js';
-import RowResizer from './RowResizer.js';
-
+import CellEditor from "./CellEditor.js";
+import ColumnResizer from "./ColumnResizer.js";
+import RowResizer from "./RowResizer.js";
 
 /**
  * Represents the main spreadsheet component that handles rendering, scrolling,
@@ -109,7 +108,7 @@ class Spreadsheet {
         this.grid.draw(this.currentStartRow, this.currentStartCol);
     }
 
-     /**
+    /**
      * Calculates the total width of a given number of columns starting from a column index.
      * @param {number} startCol - Starting column index.
      * @param {number} count - Number of columns.
@@ -123,7 +122,7 @@ class Spreadsheet {
         return sum;
     }
 
-      /**
+    /**
      * Calculates the total height of a given number of rows starting from a row index.
      * @param {number} startRow - Starting row index.
      * @param {number} count - Number of rows.
@@ -137,7 +136,6 @@ class Spreadsheet {
         return sum;
     }
 
-
     /**
      * Updates the view after a resize operation (row or column).
      */
@@ -145,7 +143,7 @@ class Spreadsheet {
         this.handleScroll();
     }
 
-      /**
+    /**
      * Adds mouse-based selection logic for cells and rows.
      */
     addSelectionEventListeners() {
@@ -180,55 +178,40 @@ class Spreadsheet {
                     break;
                 }
                 colSum += this.colWidths[this.currentStartCol + c];
-            }   
-
+            }
+            this.selectedCell = { row, col };
             this.cellEditor.showEditor(row, col);
-
-            // let prevRowSum = this.sumHeight(0, this.currentStartRow);
-            // let prevColSum = this.sumWidths(0, this.currentStartCol);
-
-            // const inputField = document.getElementById("input");
-            // inputField.style.top = `${
-            //     rowSum - 1 + this.config.colHeight + prevRowSum
-            // }px`;
-            // inputField.style.left = `${
-            //     colSum - 1 + this.config.rowWidth + prevColSum
-            // }px`; //
-
-            // inputField.style.height = `${this.rowHeights[row] + 1}px`;
-            // inputField.style.width = `${this.colWidths[col] + 1}px`;
-            // inputField.style.display = "block";
-            // this.selectedCell = { rowSum, colSum };
         });
-
-
     }
 
     initColumnSelectionDeselect() {
         // Clicking on row header or grid clears the selected column
         this.rowHeader.canvas.addEventListener("mousedown", () => {
-            if (this.selectedCol !== null) {
-                this.selectedCol = null;
+            if (this.selectedColumn !== null) {
+                this.selectedColumn = null;
                 this.grid.draw(this.currentStartRow, this.currentStartCol);
                 this.colHeader.draw(this.currentStartCol);
+                this.rowHeader.draw(this.currentStartRow);
             }
         });
 
         this.grid.canvas.addEventListener("mousedown", () => {
-            if (this.selectedCol !== null) {
-                this.selectedCol = null;
+            if (this.selectedColumn !== null) {
+                this.selectedColumn = null;
                 this.grid.draw(this.currentStartRow, this.currentStartCol);
                 this.colHeader.draw(this.currentStartCol);
+                this.rowHeader.draw(this.currentStartRow);
             }
         });
     }
 
-    initRowSelectionDeselect(){
+    initRowSelectionDeselect() {
         this.grid.canvas.addEventListener("mousedown", () => {
             if (this.selectedRow !== null) {
                 this.selectedRow = null;
                 this.grid.draw(this.currentStartRow, this.currentStartCol);
                 this.rowHeader.draw(this.currentStartRow);
+                this.colHeader.draw(this.currentStartCol);
             }
         });
 
@@ -237,10 +220,10 @@ class Spreadsheet {
                 this.selectedRow = null;
                 this.grid.draw(this.currentStartRow, this.currentStartCol);
                 this.rowHeader.draw(this.currentStartRow);
+                this.colHeader.draw(this.currentStartCol);
             }
         });
     }
-
 }
 
 export default Spreadsheet;

@@ -46,6 +46,8 @@ class CellEditor {
 
         this.inputField.focus();
         this.currentCell = { row, col };
+        this.spreadsheet.rowHeader.draw(this.spreadsheet.currentStartRow);
+        this.spreadsheet.colHeader.draw(this.spreadsheet.currentStartCol);
     }
 
     /**
@@ -59,6 +61,11 @@ class CellEditor {
             // TODO: save to data model
         }
         // this.inputField.style.display = "none";
+        this.inputField.value = "";
+    }
+
+    hideInput() {
+        this.inputField.style.display = "none";
         this.inputField.value = "";
     }
 }

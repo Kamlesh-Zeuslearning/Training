@@ -51,10 +51,88 @@ class ColHeader {
 
         ctx.clearRect(0, 0, this.canvasWidth, this.config.cellHeight);
         ctx.beginPath();
-        ctx.strokeStyle = "#ccc";
+
+        // Style for header text
+        ctx.font = "12px Arial";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+
+        let colSum = 0;
+        for (let c = 0; c < visibleCols; c++) {
+            const colIndex = startCol + c;
+            const colWidth =
+                this.spreadsheet.colWidths[
+                    this.spreadsheet.currentStartCol + c
+                ];
+            colSum += colWidth;
+            const colLabel = this.getIndex(colIndex + 1);
+            const colX = colSum - colWidth / 2;
+
+            //highlight col when cell is selected
+            if (
+                this.spreadsheet.selectedCell &&
+                this.spreadsheet.selectedCell.col == colIndex
+            ) {
+                ctx.fillStyle = " #CAEAD8"; // highlight color
+                ctx.fillRect(
+                    colSum - colWidth,
+                    0,
+                    colWidth - 0.5,
+                    this.config.cellHeight
+                );
+                ctx.fillStyle = " #107C41";
+                ctx.fillRect(
+                    colSum - colWidth - 0.5,
+                    this.config.cellHeight - 3,
+                    colWidth,
+                    2
+                );
+            }
+
+            //if row is selected
+            if (this.spreadsheet.selectedRow !== null) {
+                ctx.fillStyle = " #CAEAD8"; // highlight color
+                ctx.fillRect(
+                    colSum - colWidth,
+                    0,
+                    colWidth - 0.5,
+                    this.config.cellHeight
+                );
+            }
+
+            // If this column is selected, draw highlight first
+            if (colIndex === this.spreadsheet.selectedColumn) {
+                ctx.fillStyle = " #107C41";
+                ctx.fillRect(
+                    colSum - colWidth,
+                    0,
+                    colWidth,
+                    this.config.cellHeight
+                );
+
+                ctx.font = "bold 14px Segoe UI, sans-serif";
+                ctx.fillStyle = " #FFF"; // Text color on highlight
+            } else {
+                ctx.font = "14px Arial";
+                ctx.fillStyle = " #000"; // Regular text color
+            }
+
+            //if row is selected higlight text of col to
+            if (this.spreadsheet.selectedRow !== null) {
+                ctx.fillStyle = " #195f3a";
+            }
+            ctx.fillText(colLabel, colX, 15);
+        }
+
+        //if any row is selected highlight grid of col
+        if (this.spreadsheet.selectedRow !== null) {
+            ctx.strokeStyle = " #9BC3AE";
+        } else {
+            ctx.strokeStyle = " #ccc";
+        }
 
         //drawing vertical lines
-        let colSum = 0;
+        colSum = 0;
         for (let c = 0; c < visibleCols; c++) {
             colSum +=
                 this.spreadsheet.colWidths[
@@ -68,39 +146,6 @@ class ColHeader {
         ctx.moveTo(0, this.config.cellHeight - 0.5);
         ctx.lineTo(this.canvasWidth, this.config.cellHeight - 0.5);
         ctx.stroke();
-
-        // Style for header text
-        ctx.font = "12px Arial";
-        ctx.textAlign = "center";
-
-        colSum = 0;
-        for (let c = 0; c < visibleCols; c++) {
-            const colIndex = startCol + c;
-            const colWidth =
-                this.spreadsheet.colWidths[
-                    this.spreadsheet.currentStartCol + c
-                ];
-            colSum += colWidth;
-            const colLabel = this.getIndex(colIndex + 1);
-            const colX = colSum - colWidth / 2;
-
-            // If this column is selected, draw highlight first
-            if (colIndex === this.spreadsheet.selectedCol) {
-                ctx.fillStyle = "rgba(173, 216, 230, 0.4)";
-                ctx.fillRect(
-                    colSum - colWidth,
-                    0,
-                    colWidth,
-                    this.config.cellHeight
-                );
-
-                ctx.fillStyle = "#FFF"; // Text color on highlight
-            } else {
-                ctx.fillStyle = "#000"; // Regular text color
-            }
-
-            ctx.fillText(colLabel, colX, 15);
-        }
     }
 
     /**
@@ -165,13 +210,18 @@ class ColHeader {
                             ]
                     ) > 5
                 ) {
-                    this.spreadsheet.selectedCol =
+                    this.spreadsheet.selectedColumn =
                         this.spreadsheet.currentStartCol + c;
                     this.spreadsheet.grid.draw(
                         this.spreadsheet.currentStartRow,
                         this.spreadsheet.currentStartCol
                     );
+                    this.spreadsheet.selectedCell = null;
+                    this.spreadsheet.cellEditor.hideInput();
                     this.draw(this.spreadsheet.currentStartCol);
+                    this.spreadsheet.rowHeader.draw(
+                        this.spreadsheet.currentStartRow
+                    );
                 }
                 break;
             }
