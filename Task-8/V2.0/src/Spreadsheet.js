@@ -4,6 +4,7 @@ import GridCanvas from "./GridCanvas.js";
 import CellEditor from "./CellEditor.js";
 import ColumnResizer from "./ColumnResizer.js";
 import RowResizer from "./RowResizer.js";
+import GridData from "./GridData .js";
 
 /**
  * Represents the main spreadsheet component that handles rendering, scrolling,
@@ -31,6 +32,7 @@ class Spreadsheet {
         this.grid = new GridCanvas(this);
         this.rowHeader = new RowHeader(this);
         this.colHeader = new ColHeader(this);
+        this.gridData = new GridData();
         this.topLeft = document.getElementById("topLeft");
 
         this.scrollContainer = document.getElementById("scrollContainer");
@@ -38,6 +40,8 @@ class Spreadsheet {
             "scroll",
             this.handleScroll.bind(this)
         ); //adding event listner
+
+        this.isScrollScheduled = false; // flag to track if rAF callback is queued
 
         this.selectedCell = null; // Initially no cell selected
         this.selectedRow = null; // Initially no rows selected
@@ -67,45 +71,58 @@ class Spreadsheet {
      * Handles scrolling of the grid and triggers redrawing of visible elements.
      */
     handleScroll() {
-        const scrollTop = this.scrollContainer.scrollTop;
-        const scrollLeft = this.scrollContainer.scrollLeft;
+        if (!this.isScrollScheduled) {
+            this.isScrollScheduled = true;
 
-        //calculate start row and col
-        let rowSum = 0;
-        let startRow = 0;
+            requestAnimationFrame(() => {
+                this.isScrollScheduled = false;
+                const scrollTop = this.scrollContainer.scrollTop;
+                const scrollLeft = this.scrollContainer.scrollLeft;
 
-        while (
-            startRow < this.config.totalRows &&
-            rowSum + this.rowHeights[startRow] < scrollTop
-        ) {
-            rowSum += this.rowHeights[startRow++];
+                //calculate start row and col
+                let rowSum = 0;
+                let startRow = 0;
+
+                while (
+                    startRow < this.config.totalRows &&
+                    rowSum + this.rowHeights[startRow] < scrollTop
+                ) {
+                    rowSum += this.rowHeights[startRow++];
+                }
+
+                let colSum = 0,
+                    startCol = 0;
+                while (
+                    startCol < this.config.totalCols &&
+                    colSum + this.colWidths[startCol] < scrollLeft
+                ) {
+                    colSum += this.colWidths[startCol++];
+                }
+
+                this.currentStartCol = startCol;
+                this.currentStartRow = startRow;
+
+                // console.log(this.rowHeader.canvas.style.left, " ", scrollLeft)
+                this.rowHeader.setPosition(
+                    rowSum + this.config.cellHeight,
+                    scrollLeft
+                );
+                this.colHeader.setPosition(
+                    scrollTop,
+                    colSum + this.config.rowWidth
+                );
+                this.grid.setPosition(
+                    rowSum + this.config.cellHeight,
+                    colSum + this.config.rowWidth
+                );
+                this.topLeft.style.top = `${scrollTop}px`;
+                this.topLeft.style.left = `${scrollLeft}px`;
+
+                this.colHeader.draw(this.currentStartCol);
+                this.rowHeader.draw(this.currentStartRow);
+                this.grid.draw(this.currentStartRow, this.currentStartCol);
+            });
         }
-
-        let colSum = 0,
-            startCol = 0;
-        while (
-            startCol < this.config.totalCols &&
-            colSum + this.colWidths[startCol] < scrollLeft
-        ) {
-            colSum += this.colWidths[startCol++];
-        }
-
-        this.currentStartCol = startCol;
-        this.currentStartRow = startRow;
-
-        // console.log(this.rowHeader.canvas.style.left, " ", scrollLeft)
-        this.rowHeader.setPosition(rowSum + this.config.cellHeight, scrollLeft);
-        this.colHeader.setPosition(scrollTop, colSum + this.config.rowWidth);
-        this.grid.setPosition(
-            rowSum + this.config.cellHeight,
-            colSum + this.config.rowWidth
-        );
-        this.topLeft.style.top = `${scrollTop}px`;
-        this.topLeft.style.left = `${scrollLeft}px`;
-
-        this.colHeader.draw(this.currentStartCol);
-        this.rowHeader.draw(this.currentStartRow);
-        this.grid.draw(this.currentStartRow, this.currentStartCol);
     }
 
     /**

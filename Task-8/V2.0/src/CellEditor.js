@@ -16,39 +16,43 @@ class CellEditor {
         // });
 
         this.inputField.addEventListener("keydown", (e) => {
-            console.log("Key pressed:", e.key);
             // Placeholder: Escape key cancels input
             if (e.key === "Escape") {
-                this.inputField.style.display = "none";
-                this.spreadsheet.selectedCell = null;
-                this.spreadsheet.colHeader.draw(
-                    this.spreadsheet.currentStartCol
-                );
-                this.spreadsheet.rowHeader.draw(
-                    this.spreadsheet.currentStartRow
+                this.hideInput();
+            }
+            // handle navigation here
+            // Commit input before navigating
+            else if (
+                e.key === "ArrowDown" ||
+                e.key === "ArrowUp" ||
+                e.key === "ArrowLeft" ||
+                e.key === "ArrowRight"
+            ) {
+                this.commitInput();
+                if (e.key === "ArrowDown") {
+                    this.spreadsheet.selectedCell.row++;
+                } else if (e.key === "ArrowUp") {
+                    this.spreadsheet.selectedCell.row--;
+                } else if (e.key === "ArrowRight") {
+                    this.spreadsheet.selectedCell.col++;
+                } else if (e.key === "ArrowLeft") {
+                    this.spreadsheet.selectedCell.col--;
+                }
+                this.showEditor(
+                    this.spreadsheet.selectedCell.row,
+                    this.spreadsheet.selectedCell.col
                 );
             }
-            // TODO: handle navigation here
-            else if (e.key === "ArrowDown") {
-                this.spreadsheet.selectedCell.row++;
-                this.showEditor(
-                    this.spreadsheet.selectedCell.row,
-                    this.spreadsheet.selectedCell.col
-                );
-            } else if (e.key === "ArrowUp") {
-                this.spreadsheet.selectedCell.row--;
-                this.showEditor(
-                    this.spreadsheet.selectedCell.row,
-                    this.spreadsheet.selectedCell.col
-                );
-            } else if (e.key === "ArrowRight") {
-                this.spreadsheet.selectedCell.col++;
-                this.showEditor(
-                    this.spreadsheet.selectedCell.row,
-                    this.spreadsheet.selectedCell.col
-                );
-            } else if (e.key === "ArrowLeft") {
-                this.spreadsheet.selectedCell.col--;
+
+            // Enter key can also commit the input
+            else if (e.key === "Enter") {
+                this.commitInput();
+                if (!e.shiftKey) {
+                    this.spreadsheet.selectedCell.row++;
+                } else {
+                    this.spreadsheet.selectedCell.row--;
+                }
+
                 this.showEditor(
                     this.spreadsheet.selectedCell.row,
                     this.spreadsheet.selectedCell.col
@@ -75,7 +79,15 @@ class CellEditor {
         this.inputField.style.left = `${left}px`;
         this.inputField.style.height = `${rowHeights[row]}px`;
         this.inputField.style.width = `${colWidths[col]}px`;
-        this.inputField.value = "";
+
+        if (this.spreadsheet.gridData.hasData(row, col)) {
+            this.inputField.value = this.spreadsheet.gridData.getCellValue(
+                row,
+                col
+            );
+        } else {
+            this.inputField.value = "";
+        }
         this.inputField.style.display = "block";
 
         this.currentCell = { row, col };
@@ -89,17 +101,22 @@ class CellEditor {
     }
 
     /**
-     * Commit current input value to the data model (or console for now).
+     * Commit current input value to the data model.
      */
     commitInput() {
         const value = this.inputField.value;
         const { row, col } = this.currentCell || {};
-        if (row != null && col != null) {
-            console.log(`Saving value '${value}' to cell (${row}, ${col})`);
-            // TODO: save to data model
+        if (value === "") {
+            this.spreadsheet.gridData.clearCell(row, col);
+        } else {
+            this.spreadsheet.gridData.setCellValue(row, col, value);
         }
-        this.inputField.style.display = "none";
+
         this.inputField.value = "";
+        this.spreadsheet.grid.draw(
+            this.spreadsheet.currentStartRow,
+            this.spreadsheet.currentStartCol
+        );
         this.spreadsheet.colHeader.draw(this.spreadsheet.currentStartCol);
         this.spreadsheet.rowHeader.draw(this.spreadsheet.currentStartRow);
     }
@@ -107,6 +124,10 @@ class CellEditor {
     hideInput() {
         this.inputField.style.display = "none";
         this.inputField.value = "";
+        this.currentCell = {};
+        this.spreadsheet.selectedCell = null;
+        this.spreadsheet.colHeader.draw(this.spreadsheet.currentStartCol);
+        this.spreadsheet.rowHeader.draw(this.spreadsheet.currentStartRow);
     }
 }
 

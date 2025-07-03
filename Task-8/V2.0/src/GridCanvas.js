@@ -92,27 +92,34 @@ class GridCanvas {
         ctx.fillStyle = "#000";
 
         //drawing text
-        // rowSum = 0;
-        // for (let r = 0; r < visibleRows; r++) {
-        //     const rowIndex = startRow + r;
-        //     let colSum = 0;
-        //     for (let c = 0; c < visibleCols; c++) {
-        //         const colIndex = startCol + c;
-        //         ctx.fillText(
-        //             `R${rowIndex}C${colIndex}`,
-        //             colSum + 5,
-        //             rowSum + 15
-        //         );
-        //         colSum +=
-        //             this.spreadsheet.colWidths[
-        //                 this.spreadsheet.currentStartCol + c
-        //             ];
-        //     }
-        //     rowSum +=
-        //         this.spreadsheet.rowHeights[
-        //             this.spreadsheet.currentStartRow + r
-        //         ];
-        // }
+        rowSum = 0;
+        for (let r = 0; r < visibleRows; r++) {
+            const rowIndex = startRow + r;
+            let colSum = 0;
+
+            for (let c = 0; c < visibleCols; c++) {
+                const colIndex = startCol + c;
+                if (this.spreadsheet.gridData.hasData(rowIndex, colIndex)) {
+                    ctx.fillText(
+                        this.spreadsheet.gridData.getCellValue(
+                            rowIndex,
+                            colIndex
+                        ),
+                        colSum + 5,
+                        rowSum + 15
+                    );
+                }
+                colSum +=
+                    this.spreadsheet.colWidths[
+                        this.spreadsheet.currentStartCol + c
+                    ];
+            }
+
+            rowSum +=
+                this.spreadsheet.rowHeights[
+                    this.spreadsheet.currentStartRow + r
+                ];
+        }
     }
 
     /**
