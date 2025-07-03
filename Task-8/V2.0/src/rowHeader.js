@@ -1,3 +1,5 @@
+import RowHeaderEvents from "./RowHeaderEvents.js";
+
 /**
  * Represents the row header of the spreadsheet.
  * Responsible for drawing row numbers and horizontal grid lines.
@@ -16,7 +18,8 @@ class RowHeader {
         this.ctx = ctx;
 
         document.getElementById("rowHeader").appendChild(this.canvas);
-        this.initEventListeners();
+
+        this.events = new RowHeaderEvents(this);
     }
 
     /**
@@ -154,59 +157,6 @@ class RowHeader {
     setPosition(top, left) {
         this.canvas.style.top = `${top}px`;
         this.canvas.style.left = `${left}px`;
-    }
-
-    /**
-     * Sets up event listeners for row selection.
-     */
-    initEventListeners() {
-        this.canvas.addEventListener(
-            "mousedown",
-            this.handleMouseDown.bind(this)
-        );
-    }
-
-    /**
-     * Handles mouse down events to detect row selection.
-     * @param {MouseEvent} e - The mouse event.
-     */
-    handleMouseDown(e) {
-        const rect = this.canvas.getBoundingClientRect();
-        const mouseY = e.clientY - rect.top;
-
-        let rowSum = 0;
-        for (let r = 0; r < this.config.visibleRows; r++) {
-            rowSum +=
-                this.spreadsheet.rowHeights[
-                    this.spreadsheet.currentStartRow + r
-                ];
-            if (mouseY < rowSum) {
-                if (
-                    Math.abs(mouseY - rowSum) > 5 &&
-                    Math.abs(
-                        mouseY -
-                            rowSum +
-                            this.spreadsheet.rowHeights[
-                                this.spreadsheet.currentStartRow + r
-                            ]
-                    ) > 5
-                ) {
-                    this.spreadsheet.selectedRow =
-                        this.spreadsheet.currentStartRow + r;
-                    this.spreadsheet.grid.draw(
-                        this.spreadsheet.currentStartRow,
-                        this.spreadsheet.currentStartCol
-                    );
-                    this.spreadsheet.selectedCell = null;
-                    this.spreadsheet.cellEditor.hideInput();
-                    this.draw(this.spreadsheet.currentStartRow);
-                    this.spreadsheet.colHeader.draw(
-                        this.spreadsheet.currentStartCol
-                    );
-                }
-                break;
-            }
-        }
     }
 }
 

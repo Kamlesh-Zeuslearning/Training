@@ -15,9 +15,9 @@ class CellEditor {
         //     this.commitInput(); // when you change screen it hides
         // });
 
-        // Placeholder: Escape key cancels input
         this.inputField.addEventListener("keydown", (e) => {
             console.log("Key pressed:", e.key);
+            // Placeholder: Escape key cancels input
             if (e.key === "Escape") {
                 this.inputField.style.display = "none";
                 this.spreadsheet.selectedCell = null;
@@ -41,16 +41,13 @@ class CellEditor {
                     this.spreadsheet.selectedCell.row,
                     this.spreadsheet.selectedCell.col
                 );
-            }
-
-            else if(e.key === "ArrowRight"){
+            } else if (e.key === "ArrowRight") {
                 this.spreadsheet.selectedCell.col++;
                 this.showEditor(
                     this.spreadsheet.selectedCell.row,
                     this.spreadsheet.selectedCell.col
                 );
-            }
-            else if (e.key === "ArrowLeft"){
+            } else if (e.key === "ArrowLeft") {
                 this.spreadsheet.selectedCell.col--;
                 this.showEditor(
                     this.spreadsheet.selectedCell.row,
@@ -78,6 +75,7 @@ class CellEditor {
         this.inputField.style.left = `${left}px`;
         this.inputField.style.height = `${rowHeights[row]}px`;
         this.inputField.style.width = `${colWidths[col]}px`;
+        this.inputField.value = "";
         this.inputField.style.display = "block";
 
         this.currentCell = { row, col };

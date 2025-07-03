@@ -1,5 +1,5 @@
-import ColHeader from "./colHeader.js";
-import RowHeader from "./rowHeader.js";
+import ColHeader from "./ColHeader.js";
+import RowHeader from "./RowHeader.js";
 import GridCanvas from "./GridCanvas.js";
 import CellEditor from "./CellEditor.js";
 import ColumnResizer from "./ColumnResizer.js";
