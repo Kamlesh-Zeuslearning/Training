@@ -27,6 +27,9 @@ class RowHeaderEvents {
      * @param {MouseEvent} e - The mouse event.
      */
     handleMouseDown(e) {
+        if (this.spreadsheet.isRowResizeIntent) {
+            return; // Skip selection if user intends to resize
+        }
         const rect = this.canvas.getBoundingClientRect();
         const mouseY = e.clientY - rect.top;
 
@@ -37,32 +40,59 @@ class RowHeaderEvents {
                     this.spreadsheet.currentStartRow + r
                 ];
             if (mouseY < rowSum) {
-                if (
-                    Math.abs(mouseY - rowSum) > 5 &&
-                    Math.abs(
-                        mouseY -
-                            rowSum +
-                            this.spreadsheet.rowHeights[
-                                this.spreadsheet.currentStartRow + r
-                            ]
-                    ) > 5
-                ) {
-                    this.spreadsheet.selectedRow =
-                        this.spreadsheet.currentStartRow + r;
-                    this.spreadsheet.grid.draw(
-                        this.spreadsheet.currentStartRow,
-                        this.spreadsheet.currentStartCol
-                    );
-                    this.spreadsheet.selectedCell = null;
-                    this.spreadsheet.cellEditor.hideInput();
-                    this.rowHeader.draw(this.spreadsheet.currentStartRow);
-                    this.spreadsheet.colHeader.draw(
-                        this.spreadsheet.currentStartCol
-                    );
-                }
+                this.spreadsheet.selectedRow =
+                    this.spreadsheet.currentStartRow + r;
+                this.spreadsheet.grid.draw(
+                    this.spreadsheet.currentStartRow,
+                    this.spreadsheet.currentStartCol
+                );
+                this.spreadsheet.selectedCell = null;
+                this.spreadsheet.cellEditor.hideInput();
+                this.rowHeader.draw(this.spreadsheet.currentStartRow);
+                this.spreadsheet.colHeader.draw(
+                    this.spreadsheet.currentStartCol
+                );
+
                 break;
             }
         }
+    }
+
+    initRowSelectionDeselect() {
+        this.spreadsheet.grid.canvas.addEventListener("mousedown", () => {
+            if (this.spreadsheet.selectedRow !== null) {
+                this.spreadsheet.selectedRow = null;
+                this.spreadsheet.grid.draw(
+                    this.spreadsheet.currentStartRow,
+                    this.spreadsheet.currentStartCol
+                );
+                this.spreadsheet.rowHeader.draw(
+                    this.spreadsheet.currentStartRow
+                );
+                this.spreadsheet.colHeader.draw(
+                    this.spreadsheet.currentStartCol
+                );
+            }
+        });
+
+        this.spreadsheet.colHeader.canvas.addEventListener("mousedown", () => {
+            if (
+                this.spreadsheet.selectedRow !== null &&
+                !this.spreadsheet.isColResizeIntent
+            ) {
+                this.spreadsheet.selectedRow = null;
+                this.spreadsheet.grid.draw(
+                    this.spreadsheet.currentStartRow,
+                    this.spreadsheet.currentStartCol
+                );
+                this.spreadsheet.rowHeader.draw(
+                    this.spreadsheet.currentStartRow
+                );
+                this.spreadsheet.colHeader.draw(
+                    this.spreadsheet.currentStartCol
+                );
+            }
+        });
     }
 }
 

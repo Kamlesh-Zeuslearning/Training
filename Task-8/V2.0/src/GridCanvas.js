@@ -16,6 +16,9 @@ class GridCanvas {
         this.canvas = canvas;
         this.ctx = ctx;
 
+        // Adding event listeners for selection
+        this.addSelectionEventListeners();
+
         document.getElementById("container").appendChild(this.canvas); //add canvas to the html tree
     }
 
@@ -89,27 +92,27 @@ class GridCanvas {
         ctx.fillStyle = "#000";
 
         //drawing text
-        rowSum = 0;
-        for (let r = 0; r < visibleRows; r++) {
-            const rowIndex = startRow + r;
-            let colSum = 0;
-            for (let c = 0; c < visibleCols; c++) {
-                const colIndex = startCol + c;
-                ctx.fillText(
-                    `R${rowIndex}C${colIndex}`,
-                    colSum + 5,
-                    rowSum + 15
-                );
-                colSum +=
-                    this.spreadsheet.colWidths[
-                        this.spreadsheet.currentStartCol + c
-                    ];
-            }
-            rowSum +=
-                this.spreadsheet.rowHeights[
-                    this.spreadsheet.currentStartRow + r
-                ];
-        }
+        // rowSum = 0;
+        // for (let r = 0; r < visibleRows; r++) {
+        //     const rowIndex = startRow + r;
+        //     let colSum = 0;
+        //     for (let c = 0; c < visibleCols; c++) {
+        //         const colIndex = startCol + c;
+        //         ctx.fillText(
+        //             `R${rowIndex}C${colIndex}`,
+        //             colSum + 5,
+        //             rowSum + 15
+        //         );
+        //         colSum +=
+        //             this.spreadsheet.colWidths[
+        //                 this.spreadsheet.currentStartCol + c
+        //             ];
+        //     }
+        //     rowSum +=
+        //         this.spreadsheet.rowHeights[
+        //             this.spreadsheet.currentStartRow + r
+        //         ];
+        // }
     }
 
     /**
@@ -176,6 +179,48 @@ class GridCanvas {
 
             rowSum += height;
         }
+    }
+
+    /**
+     * Adds mouse-based selection logic for cells and rows.
+     */
+    addSelectionEventListeners() {
+        //for grid
+        this.canvas.addEventListener("mousedown", (e) => {
+            let rowSum = 0;
+            let rect = this.canvas.getBoundingClientRect();
+            let mouseY = e.clientY - rect.top;
+
+            const currentStartRow = this.spreadsheet.currentStartRow;
+            let row = 0;
+            for (let r = 0; r < this.config.visibleRows; r++) {
+                if (
+                    rowSum + this.spreadsheet.rowHeights[currentStartRow + r] >
+                    mouseY
+                ) {
+                    row = currentStartRow + r;
+                    break;
+                }
+                rowSum += this.spreadsheet.rowHeights[currentStartRow + r];
+            }
+
+            let colSum = 0;
+            let mouseX = e.clientX - rect.left;
+            const currentStartCol = this.spreadsheet.currentStartCol;
+            let col = 0;
+            for (let c = 0; c < this.config.visibleCols; c++) {
+                if (
+                    colSum + this.spreadsheet.colWidths[currentStartCol + c] >
+                    mouseX
+                ) {
+                    col = currentStartCol + c;
+                    break;
+                }
+                colSum += this.spreadsheet.colWidths[currentStartCol + c];
+            }
+            this.spreadsheet.selectedCell = { row, col };
+            this.spreadsheet.cellEditor.showEditor(row, col);
+        });
     }
 }
 

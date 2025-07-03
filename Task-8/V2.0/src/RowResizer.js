@@ -71,6 +71,9 @@ export default class RowResizer {
             }
         }
 
+        // 👇 Shared flag — tells the selection handler that resizing is "armed"
+        this.spreadsheet.isRowResizeIntent = this.rowIndex !== null;
+
         // Update the cursor style based on whether a resize is detected
         this.spreadsheet.rowHeader.canvas.style.cursor =
             this.rowIndex === null ? "default" : "row-resize";
@@ -97,6 +100,7 @@ export default class RowResizer {
             this.rowResize = false; // Stop resizing
             this.rowIndex = null; // Clear the row index
         }
+        this.spreadsheet.isRowResizeIntent;
     }
 
     /**

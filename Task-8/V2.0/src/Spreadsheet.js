@@ -43,6 +43,9 @@ class Spreadsheet {
         this.selectedRow = null; // Initially no rows selected
         this.selectedColumn = null; // Initially no columns selected
 
+        this.isColResizeIntent = false; // Shared coordination flag
+        this.isRowResizeIntent = false; //Shared coordination flag
+
         this.cellEditor = new CellEditor(this);
 
         // Initial render
@@ -54,13 +57,10 @@ class Spreadsheet {
         this.columnResizer = new ColumnResizer(this);
         this.rowResizer = new RowResizer(this);
 
-        // Adding event listeners for selection
-        this.addSelectionEventListeners();
-
         //deselect the selected column when clicking outside
-        this.initColumnSelectionDeselect();
+        this.colHeader.events.initColumnSelectionDeselect();
 
-        this.initRowSelectionDeselect();
+        this.rowHeader.events.initRowSelectionDeselect();
     }
 
     /**
@@ -141,88 +141,6 @@ class Spreadsheet {
      */
     updateAfterResize() {
         this.handleScroll();
-    }
-
-    /**
-     * Adds mouse-based selection logic for cells and rows.
-     */
-    addSelectionEventListeners() {
-        //for grid
-        this.grid.canvas.addEventListener("mousedown", (e) => {
-            let rowSum = 0;
-            let rect = this.grid.canvas.getBoundingClientRect();
-            let mouseY = e.clientY - rect.top;
-
-            let row = 0;
-            for (let r = 0; r < this.config.visibleRows; r++) {
-                if (
-                    rowSum + this.rowHeights[this.currentStartRow + r] >
-                    mouseY
-                ) {
-                    row = this.currentStartRow + r;
-                    break;
-                }
-                rowSum += this.rowHeights[this.currentStartRow + r];
-            }
-
-            let colSum = 0;
-            let mouseX = e.clientX - rect.left;
-
-            let col = 0;
-            for (let c = 0; c < this.config.visibleCols; c++) {
-                if (
-                    colSum + this.colWidths[this.currentStartCol + c] >
-                    mouseX
-                ) {
-                    col = this.currentStartCol + c;
-                    break;
-                }
-                colSum += this.colWidths[this.currentStartCol + c];
-            }
-            this.selectedCell = { row, col };
-            this.cellEditor.showEditor(row, col);
-        });
-    }
-
-    initColumnSelectionDeselect() {
-        // Clicking on row header or grid clears the selected column
-        this.rowHeader.canvas.addEventListener("mousedown", () => {
-            if (this.selectedColumn !== null) {
-                this.selectedColumn = null;
-                this.grid.draw(this.currentStartRow, this.currentStartCol);
-                this.colHeader.draw(this.currentStartCol);
-                this.rowHeader.draw(this.currentStartRow);
-            }
-        });
-
-        this.grid.canvas.addEventListener("mousedown", () => {
-            if (this.selectedColumn !== null) {
-                this.selectedColumn = null;
-                this.grid.draw(this.currentStartRow, this.currentStartCol);
-                this.colHeader.draw(this.currentStartCol);
-                this.rowHeader.draw(this.currentStartRow);
-            }
-        });
-    }
-
-    initRowSelectionDeselect() {
-        this.grid.canvas.addEventListener("mousedown", () => {
-            if (this.selectedRow !== null) {
-                this.selectedRow = null;
-                this.grid.draw(this.currentStartRow, this.currentStartCol);
-                this.rowHeader.draw(this.currentStartRow);
-                this.colHeader.draw(this.currentStartCol);
-            }
-        });
-
-        this.colHeader.canvas.addEventListener("mousedown", () => {
-            if (this.selectedRow !== null) {
-                this.selectedRow = null;
-                this.grid.draw(this.currentStartRow, this.currentStartCol);
-                this.rowHeader.draw(this.currentStartRow);
-                this.colHeader.draw(this.currentStartCol);
-            }
-        });
     }
 }
 

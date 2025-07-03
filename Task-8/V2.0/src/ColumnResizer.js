@@ -43,6 +43,9 @@ export default class ColumnResizer {
             }
         }
 
+        // 👇 Shared flag — tells the selection handler that resizing is "armed"
+        this.spreadsheet.isColResizeIntent = this.colIndex !== null;
+
         this.spreadsheet.colHeader.canvas.style.cursor =
             this.colIndex === null ? "default" : "col-resize";
     }
@@ -60,6 +63,7 @@ export default class ColumnResizer {
             this.resize = false;
             this.colIndex = null;
         }
+        this.spreadsheet.isColResizeIntent = false; //flag
     }
 
     onMouseResize(e) {

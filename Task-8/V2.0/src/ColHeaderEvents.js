@@ -22,6 +22,10 @@ class ColHeaderEvents {
     }
 
     handleMouseDown(e) {
+        if (this.spreadsheet.isColResizeIntent) {
+            return;
+        } // 👈 Skip selection if resizing
+
         const rect = this.canvas.getBoundingClientRect();
         const mouseX = e.clientX - rect.left;
 
@@ -36,25 +40,21 @@ class ColHeaderEvents {
             colSum += colWidth;
 
             if (mouseX < colSum) {
-                if (
-                    Math.abs(mouseX - colSum) > 5 &&
-                    Math.abs(mouseX - colSum + colWidth) > 5
-                ) {
-                    this.spreadsheet.selectedColumn =
-                        this.spreadsheet.currentStartCol + c;
-                    this.spreadsheet.selectedCell = null;
+                this.spreadsheet.selectedColumn =
+                    this.spreadsheet.currentStartCol + c;
+                this.spreadsheet.selectedCell = null;
 
-                    this.spreadsheet.cellEditor.hideInput();
+                this.spreadsheet.cellEditor.hideInput();
 
-                    this.spreadsheet.grid.draw(
-                        this.spreadsheet.currentStartRow,
-                        this.spreadsheet.currentStartCol
-                    );
-                    this.colHeader.draw(this.spreadsheet.currentStartCol);
-                    this.spreadsheet.rowHeader.draw(
-                        this.spreadsheet.currentStartRow
-                    );
-                }
+                this.spreadsheet.grid.draw(
+                    this.spreadsheet.currentStartRow,
+                    this.spreadsheet.currentStartCol
+                );
+                this.colHeader.draw(this.spreadsheet.currentStartCol);
+                this.spreadsheet.rowHeader.draw(
+                    this.spreadsheet.currentStartRow
+                );
+
                 break;
             }
         }
@@ -62,6 +62,44 @@ class ColHeaderEvents {
 
     handleMouseMove(e) {
         // Optional future implementation
+    }
+
+    initColumnSelectionDeselect() {
+        // Clicking on row header or grid clears the selected column
+        this.spreadsheet.rowHeader.canvas.addEventListener("mousedown", () => {
+            if (
+                this.spreadsheet.selectedColumn !== null &&
+                !this.spreadsheet.isRowResizeIntent
+            ) {
+                this.spreadsheet.selectedColumn = null;
+                this.spreadsheet.grid.draw(
+                    this.spreadsheet.currentStartRow,
+                    this.spreadsheet.currentStartCol
+                );
+                this.spreadsheet.colHeader.draw(
+                    this.spreadsheet.currentStartCol
+                );
+                this.spreadsheet.rowHeader.draw(
+                    this.spreadsheet.currentStartRow
+                );
+            }
+        });
+
+        this.spreadsheet.grid.canvas.addEventListener("mousedown", () => {
+            if (this.spreadsheet.selectedColumn !== null) {
+                this.spreadsheet.selectedColumn = null;
+                this.spreadsheet.grid.draw(
+                    this.spreadsheet.currentStartRow,
+                    this.spreadsheet.currentStartCol
+                );
+                this.spreadsheet.colHeader.draw(
+                    this.spreadsheet.currentStartCol
+                );
+                this.spreadsheet.rowHeader.draw(
+                    this.spreadsheet.currentStartRow
+                );
+            }
+        });
     }
 }
 
