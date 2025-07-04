@@ -32,12 +32,17 @@ class CellEditor {
                 if (e.key === "ArrowDown") {
                     this.spreadsheet.selectedCell.row++;
                 } else if (e.key === "ArrowUp") {
-                    this.spreadsheet.selectedCell.row--;
+                    if (this.spreadsheet.selectedCell.row > 0) {
+                        this.spreadsheet.selectedCell.row--;
+                    }
                 } else if (e.key === "ArrowRight") {
                     this.spreadsheet.selectedCell.col++;
                 } else if (e.key === "ArrowLeft") {
-                    this.spreadsheet.selectedCell.col--;
+                    if (this.spreadsheet.selectedCell.col > 0) {
+                        this.spreadsheet.selectedCell.col--;
+                    }
                 }
+
                 this.showEditor(
                     this.spreadsheet.selectedCell.row,
                     this.spreadsheet.selectedCell.col
@@ -91,9 +96,22 @@ class CellEditor {
         this.inputField.style.display = "block";
 
         this.currentCell = { row, col };
-        this.spreadsheet.rowHeader.draw(this.spreadsheet.currentStartRow);
-        this.spreadsheet.colHeader.draw(this.spreadsheet.currentStartCol);
 
+        this.spreadsheet.selectionManager.startCell = {
+            row: this.spreadsheet.selectedCell.row,
+            col: this.spreadsheet.selectedCell.col,
+        };
+        this.spreadsheet.selectionManager.endCell = {
+            row: this.spreadsheet.selectedCell.row,
+            col: this.spreadsheet.selectedCell.col,
+        };
+
+        this.spreadsheet.grid.draw(
+            this.spreadsheet.currentStartRow,
+            this.spreadsheet.currentStartCol
+        );
+        this.spreadsheet.colHeader.draw(this.spreadsheet.currentStartCol);
+        this.spreadsheet.rowHeader.draw(this.spreadsheet.currentStartRow);
         // Give a small delay before focusing
         setTimeout(() => {
             this.inputField.focus();
@@ -113,12 +131,6 @@ class CellEditor {
         }
 
         this.inputField.value = "";
-        this.spreadsheet.grid.draw(
-            this.spreadsheet.currentStartRow,
-            this.spreadsheet.currentStartCol
-        );
-        this.spreadsheet.colHeader.draw(this.spreadsheet.currentStartCol);
-        this.spreadsheet.rowHeader.draw(this.spreadsheet.currentStartRow);
     }
 
     hideInput() {
@@ -126,6 +138,11 @@ class CellEditor {
         this.inputField.value = "";
         this.currentCell = {};
         this.spreadsheet.selectedCell = null;
+        this.spreadsheet.isSelectingRange = false;
+        this.spreadsheet.grid.draw(
+            this.spreadsheet.currentStartRow,
+            this.spreadsheet.currentStartCol
+        );
         this.spreadsheet.colHeader.draw(this.spreadsheet.currentStartCol);
         this.spreadsheet.rowHeader.draw(this.spreadsheet.currentStartRow);
     }

@@ -30,6 +30,8 @@ class RowHeaderEvents {
         if (this.spreadsheet.isRowResizeIntent) {
             return; // Skip selection if user intends to resize
         }
+        this.spreadsheet.isSelectingRange = false;
+
         const rect = this.canvas.getBoundingClientRect();
         const mouseY = e.clientY - rect.top;
 

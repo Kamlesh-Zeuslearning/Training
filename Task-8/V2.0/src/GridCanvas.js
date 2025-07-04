@@ -56,6 +56,10 @@ class GridCanvas {
         ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
         ctx.beginPath();
 
+        if (this.spreadsheet.isSelectingRange) {
+            this.highlightSelectedRange();
+        }
+
         // Highlight selected column and row
         this.highlightSelectedColumn(startCol);
         this.highlightSelectedRow(startRow);
@@ -228,6 +232,64 @@ class GridCanvas {
             this.spreadsheet.selectedCell = { row, col };
             this.spreadsheet.cellEditor.showEditor(row, col);
         });
+    }
+
+    highlightSelectedRange() {
+        const range = this.spreadsheet.selectionManager.getSelectedRange();
+        if (!range) return;
+
+        const { startRow, endRow, startCol, endCol } = range;
+        const ctx = this.ctx;
+
+        // Calculate the top position based on the row heights and the current scroll position
+        let top = this.spreadsheet.sumHeight(
+            0,
+            Math.min(this.spreadsheet.currentStartRow, startRow)
+        );
+        for (let r = this.spreadsheet.currentStartRow; r < startRow; r++) {
+            top += this.spreadsheet.rowHeights[r];
+        }
+
+        // Calculate the left position based on the column widths and the current scroll position
+        let left = this.spreadsheet.sumWidths(
+            0,
+            Math.min(this.spreadsheet.currentStartCol, startCol)
+        );
+        for (let c = this.spreadsheet.currentStartCol; c < startCol; c++) {
+            left += this.spreadsheet.colWidths[c];
+        }
+
+        // Calculate the width of the selected range
+        let width = 0;
+        for (let c = startCol; c <= endCol; c++) {
+            width += this.spreadsheet.colWidths[c];
+        }
+
+        // Calculate the height of the selected range
+        let height = 0;
+        for (let r = startRow; r <= endRow; r++) {
+            height += this.spreadsheet.rowHeights[r];
+        }
+
+        // Ensure that top and left are adjusted based on the scroll position
+        top -=
+            this.spreadsheet.currentStartRow *
+            this.spreadsheet.config.cellHeight;
+        left -=
+            this.spreadsheet.currentStartCol *
+            this.spreadsheet.config.cellWidth;
+
+        // Fill selection with transparent color
+        ctx.fillStyle = "rgba(180, 215, 255, 0.3)";
+        ctx.fillRect(left, top, width, height);
+
+        // Add border around the selected range
+        ctx.strokeStyle = "#107C41";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(left + 1, top + 1, width - 2, height - 2); // slight inset for clean look
+
+        // Reset lineWidth for other drawings
+        ctx.lineWidth = 1;
     }
 }
 

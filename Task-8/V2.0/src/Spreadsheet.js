@@ -5,6 +5,7 @@ import CellEditor from "./CellEditor.js";
 import ColumnResizer from "./ColumnResizer.js";
 import RowResizer from "./RowResizer.js";
 import GridData from "./GridData .js";
+import SelectionManager from "./SelectionManager.js";
 
 /**
  * Represents the main spreadsheet component that handles rendering, scrolling,
@@ -46,6 +47,7 @@ class Spreadsheet {
         this.selectedCell = null; // Initially no cell selected
         this.selectedRow = null; // Initially no rows selected
         this.selectedColumn = null; // Initially no columns selected
+        this.isSelectingRange = false;
 
         this.isColResizeIntent = false; // Shared coordination flag
         this.isRowResizeIntent = false; //Shared coordination flag
@@ -65,6 +67,8 @@ class Spreadsheet {
         this.colHeader.events.initColumnSelectionDeselect();
 
         this.rowHeader.events.initRowSelectionDeselect();
+
+        this.selectionManager = new SelectionManager(this);
     }
 
     /**

@@ -72,25 +72,28 @@ class RowHeader {
             const rowY = rowSum - rowHeight / 2;
 
             //if cell is selected
-
-            if (
-                this.spreadsheet.selectedCell &&
-                this.spreadsheet.selectedCell.row == rowIndex
-            ) {
-                ctx.fillStyle = " #CAEAD8"; // highlight color
-                ctx.fillRect(
-                    0,
-                    rowSum - rowHeight,
-                    this.config.rowWidth - 0.5,
-                    rowHeight - 0.5
-                );
-                ctx.fillStyle = " #107C41";
-                ctx.fillRect(
-                    this.config.rowWidth - 3,
-                    rowSum - rowHeight - 0.5,
-                    2,
-                    rowHeight
-                );
+            if (this.spreadsheet.isSelectingRange) {
+                let selectedRange =
+                    this.spreadsheet.selectionManager.getSelectedRange();
+                if (
+                    selectedRange.startRow <= rowIndex &&
+                    selectedRange.endRow >= rowIndex
+                ) {
+                    ctx.fillStyle = " #CAEAD8"; // highlight color
+                    ctx.fillRect(
+                        0,
+                        rowSum - rowHeight,
+                        this.config.rowWidth - 0.5,
+                        rowHeight - 0.5
+                    );
+                    ctx.fillStyle = " #107C41";
+                    ctx.fillRect(
+                        this.config.rowWidth - 3,
+                        rowSum - rowHeight - 0.5,
+                        2,
+                        rowHeight
+                    );
+                }
             }
 
             //if col is selected

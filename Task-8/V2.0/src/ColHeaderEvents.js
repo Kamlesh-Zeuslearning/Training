@@ -25,6 +25,7 @@ class ColHeaderEvents {
         if (this.spreadsheet.isColResizeIntent) {
             return;
         } // 👈 Skip selection if resizing
+        this.spreadsheet.isSelectingRange = false;
 
         const rect = this.canvas.getBoundingClientRect();
         const mouseX = e.clientX - rect.left;

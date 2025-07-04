@@ -72,24 +72,28 @@ class ColHeader {
             const colX = colSum - colWidth / 2;
 
             //highlight col when cell is selected
-            if (
-                this.spreadsheet.selectedCell &&
-                this.spreadsheet.selectedCell.col == colIndex
-            ) {
-                ctx.fillStyle = " #CAEAD8"; // highlight color
-                ctx.fillRect(
-                    colSum - colWidth,
-                    0,
-                    colWidth - 0.5,
-                    this.config.cellHeight
-                );
-                ctx.fillStyle = " #107C41";
-                ctx.fillRect(
-                    colSum - colWidth - 0.5,
-                    this.config.cellHeight - 3,
-                    colWidth,
-                    2
-                );
+            if (this.spreadsheet.isSelectingRange) {
+                let selectedRange =
+                    this.spreadsheet.selectionManager.getSelectedRange();
+                if (
+                    selectedRange.startCol <= colIndex &&
+                    selectedRange.endCol >= colIndex
+                ) {
+                    ctx.fillStyle = " #CAEAD8"; // highlight color
+                    ctx.fillRect(
+                        colSum - colWidth,
+                        0,
+                        colWidth - 0.5,
+                        this.config.cellHeight
+                    );
+                    ctx.fillStyle = " #107C41";
+                    ctx.fillRect(
+                        colSum - colWidth - 0.5,
+                        this.config.cellHeight - 3,
+                        colWidth,
+                        2
+                    );
+                }
             }
 
             //if row is selected
