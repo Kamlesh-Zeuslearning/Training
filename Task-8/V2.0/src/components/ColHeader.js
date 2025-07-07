@@ -1,4 +1,4 @@
-import ColHeaderEvents from "./ColHeaderEvents.js";
+import ColHeaderEvents from "../events/ColHeaderEvents.js";
 
 /**
  * Represents the column header area of the spreadsheet.

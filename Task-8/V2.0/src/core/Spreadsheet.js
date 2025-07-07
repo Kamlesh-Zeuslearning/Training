@@ -1,12 +1,12 @@
-import ColHeader from "./ColHeader.js";
-import RowHeader from "./RowHeader.js";
-import GridCanvas from "./GridCanvas.js";
-import CellEditor from "./CellEditor.js";
-import ColumnResizer from "./ColumnResizer.js";
-import RowResizer from "./RowResizer.js";
+import ColHeader from "../components/ColHeader.js";
+import RowHeader from "../components/RowHeader.js";
+import GridCanvas from "../components/GridCanvas.js";
+import CellEditor from "../components/CellEditor.js";
+import ColumnResizer from "../resizers/ColumnResizer.js";
+import RowResizer from "../resizers/RowResizer.js";
 import GridData from "./GridData .js";
-import SelectionManager from "./SelectionManager.js";
-import CommandManager from "./CommandManager.js";
+import SelectionManager from "../events/SelectionManager.js";
+import CommandManager from "../core/CommandManager.js";
 
 /**
  * Represents the main spreadsheet component that handles rendering, scrolling,

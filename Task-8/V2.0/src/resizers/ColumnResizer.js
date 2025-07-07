@@ -1,4 +1,4 @@
-import ResizeColumnCommand from "./ResizeColumnCommand.js";
+import ResizeColumnCommand from "../commands/ResizeColumnCommand.js";
 
 export default class ColumnResizer {
     constructor(spreadsheet) {

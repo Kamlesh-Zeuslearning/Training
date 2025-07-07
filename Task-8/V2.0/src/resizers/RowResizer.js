@@ -1,4 +1,4 @@
-import ResizeRowCommand from "./ResizeRowCommand.js";
+import ResizeRowCommand from "../commands/ResizeRowCommand.js";
 
 /**
  * Class for handling row resizing in the spreadsheet.

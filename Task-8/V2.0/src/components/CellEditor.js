@@ -1,4 +1,4 @@
-import EditCellCommand from "./EditCellCommand.js";
+import EditCellCommand from "../commands/EditCellCommand.js";
 
 class CellEditor {
     /**

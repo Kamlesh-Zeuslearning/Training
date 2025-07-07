@@ -1,4 +1,4 @@
-import Spreadsheet from "./src/Spreadsheet.js";
+import Spreadsheet from "./src/core/Spreadsheet.js";
 
 //basic grid dimensions
 const config = {

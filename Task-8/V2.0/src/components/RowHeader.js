@@ -1,4 +1,4 @@
-import RowHeaderEvents from "./RowHeaderEvents.js";
+import RowHeaderEvents from "../events/RowHeaderEvents.js";
 
 /**
  * Represents the row header of the spreadsheet.
