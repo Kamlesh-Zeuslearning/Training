@@ -11,7 +11,8 @@ class RowHeader {
     constructor(spreadsheet) {
         this.spreadsheet = spreadsheet;
         this.config = spreadsheet.config;
-        this.canvasHeight = this.config.cellHeight * this.config.visibleRows;
+        this.canvasHeight =
+            this.config.cellHeight * this.config.visibleRows + 300;
 
         const { canvas, ctx } = this.createCanvas();
         this.canvas = canvas;
@@ -108,7 +109,13 @@ class RowHeader {
             }
 
             //if this row is selected,  highlight it
-            if (rowIndex === this.spreadsheet.selectedRow) {
+            if (
+                this.spreadsheet.selectedRow !== null &&
+                this.spreadsheet.selectionManager.getSelectedRange().startRow <=
+                    rowIndex &&
+                this.spreadsheet.selectionManager.getSelectedRange().endRow >=
+                    rowIndex
+            ) {
                 ctx.fillStyle = " #107C41"; // highlight color
                 ctx.fillRect(
                     0,

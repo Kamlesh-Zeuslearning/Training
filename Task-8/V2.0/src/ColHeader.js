@@ -11,7 +11,8 @@ class ColHeader {
     constructor(spreadsheet) {
         this.spreadsheet = spreadsheet;
         this.config = spreadsheet.config;
-        this.canvasWidth = this.config.cellWidth * this.config.visibleCols;
+        this.canvasWidth =
+            this.config.cellWidth * this.config.visibleCols + 100;
 
         const { canvas, ctx } = this.createCanvas();
         this.canvas = canvas;
@@ -108,7 +109,13 @@ class ColHeader {
             }
 
             // If this column is selected, draw highlight first
-            if (colIndex === this.spreadsheet.selectedColumn) {
+            if (
+                this.spreadsheet.selectedColumn !== null &&
+                this.spreadsheet.selectionManager.getSelectedRange().startCol <=
+                    colIndex &&
+                this.spreadsheet.selectionManager.getSelectedRange().endCol >=
+                    colIndex
+            ) {
                 ctx.fillStyle = " #107C41";
                 ctx.fillRect(
                     colSum - colWidth,
