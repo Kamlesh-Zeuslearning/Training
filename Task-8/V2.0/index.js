@@ -95,3 +95,34 @@ document.getElementById('maxBtn').addEventListener('click', () => {
     }
     alert(`Max: ${max === -Infinity ? 'N/A' : max}`);
 });
+
+document.getElementById('countBtn').addEventListener('click', () => {
+    const range = spreadsheet.selectionManager.getSelectedRange();
+    let cnt = 0;
+    for(let r=range.startRow; r <= range.endRow; r++){
+        for(let c=range.startCol; c <= range.endCol; c++){
+            if(spreadsheet.gridData.hasData(r,c)){
+                cnt++;
+            }
+        }
+    }
+    alert(cnt)
+})
+
+document.getElementById('avgBtn').addEventListener('click', ()=>{
+    const range = spreadsheet.selectionManager.getSelectedRange();
+    let sum = 0;
+    let cnt = 0;
+    for (let r = range.startRow; r <= range.endRow; r++) {
+        for (let c = range.startCol; c <= range.endCol; c++) {
+            const val = spreadsheet.gridData.getCellValue(r, c);
+            const num = parseFloat(val);
+            if (!isNaN(num)) sum += num;
+            if(num !== null){
+                cnt++;
+            }
+        }
+    }
+
+    alert(`Avg : ${sum/cnt}`)
+})

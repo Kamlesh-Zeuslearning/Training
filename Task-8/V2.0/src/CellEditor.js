@@ -20,6 +20,8 @@ class CellEditor {
         this.inputField.addEventListener("keydown", (e) => {
             // Placeholder: Escape key cancels input
             if (e.key === "Escape") {
+                this.spreadsheet.selectionManager.startCell = null;
+                this.spreadsheet.selectionManager.endCell = null;
                 this.hideInput();
             }
             // handle navigation here
@@ -82,10 +84,10 @@ class CellEditor {
         const top = rowSum + config.colHeight + config.topPadding;
         const left = colSum + config.rowWidth;
 
-        this.inputField.style.top = `${top}px`;
-        this.inputField.style.left = `${left}px`;
-        this.inputField.style.height = `${rowHeights[row]}px`;
-        this.inputField.style.width = `${colWidths[col]}px`;
+        this.inputField.style.top = `${top + 2}px`;
+        this.inputField.style.left = `${left + 2}px`;
+        this.inputField.style.height = `${rowHeights[row] - 4}px`;
+        this.inputField.style.width = `${colWidths[col] - 4}px`;
 
         if (this.spreadsheet.gridData.hasData(row, col)) {
             this.inputField.value = this.spreadsheet.gridData.getCellValue(
@@ -134,6 +136,11 @@ class CellEditor {
             this.spreadsheet.gridData.clearCell(row, col);
         } else if (saveValue == value) {
             //no change
+        } else if (value === "") {
+            const cmd = new EditCellCommand(this.spreadsheet, row, col, value);
+            this.spreadsheet.commandManager.executeCommand(cmd);
+            this.spreadsheet.gridData.clearCell(row, col);
+            // console.log(this.spreadsheet.gridData.hasData(row, col));
         } else {
             // Otherwise, set the new value
 

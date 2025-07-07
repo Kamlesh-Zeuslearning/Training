@@ -60,7 +60,7 @@ body {
     z-index: 10;
     font-size: 12px;
     position: absolute;
-    border: 1px solid rgb(0, 177, 0);
+    border: 0;
     outline: none;
 }
 
@@ -93,4 +93,10 @@ body {
 .toolbar-btn:hover {
     background-color: #e6f2ff;
     border-color: #66afe9;
+}
+
+.toolbar-btn:disabled {
+    background-color: #eee;
+    color: #888;
+    cursor: not-allowed;
 }

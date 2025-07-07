@@ -56,9 +56,6 @@ class GridCanvas {
         ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
         ctx.beginPath();
 
-        if (this.spreadsheet.isSelectingRange) {
-            this.highlightSelectedRange();
-        }
         // console.log("hi")
         // Highlight selected column and row
         if (
@@ -113,14 +110,28 @@ class GridCanvas {
             for (let c = 0; c < visibleCols; c++) {
                 const colIndex = startCol + c;
                 if (this.spreadsheet.gridData.hasData(rowIndex, colIndex)) {
-                    ctx.fillText(
-                        this.spreadsheet.gridData.getCellValue(
-                            rowIndex,
-                            colIndex
-                        ),
-                        colSum + 5,
-                        rowSum + 15
+                    const cellValue = this.spreadsheet.gridData.getCellValue(
+                        rowIndex,
+                        colIndex
                     );
+
+                    // Check if the value is a number
+                    const isNumeric = !isNaN(cellValue) && cellValue !== "";
+                    if (isNumeric) {
+                        ctx.textAlign = "right";
+                        ctx.fillText(
+                            cellValue,
+                            colSum +
+                                this.spreadsheet.colWidths[
+                                    this.spreadsheet.currentStartCol + c
+                                ] -
+                                5,
+                            rowSum + 15
+                        );
+                    } else {
+                        ctx.textAlign = "left";
+                        ctx.fillText(cellValue, colSum + 5, rowSum + 15);
+                    }
                 }
                 colSum +=
                     this.spreadsheet.colWidths[
@@ -132,6 +143,13 @@ class GridCanvas {
                 this.spreadsheet.rowHeights[
                     this.spreadsheet.currentStartRow + r
                 ];
+        }
+
+        if (this.spreadsheet.isSelectingRange) {
+            this.highlightSelectedRange();
+        }
+        if(this.spreadsheet.selectionManager){
+            this.updateToolbarButtons();
         }
     }
 
@@ -245,6 +263,16 @@ class GridCanvas {
 
         // Reset lineWidth for other drawings
         ctx.lineWidth = 1;
+    }
+
+    updateToolbarButtons() {
+        const range = this.spreadsheet.selectionManager.getSelectedRange();
+        const isValid = !!range;
+        
+        const buttons = ["sumBtn", "minBtn", "maxBtn", "countBtn", "avgBtn"];
+        buttons.forEach((id) => {
+            document.getElementById(id).disabled = !isValid;
+        });
     }
 }
 
