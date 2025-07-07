@@ -6,6 +6,7 @@ import ColumnResizer from "./ColumnResizer.js";
 import RowResizer from "./RowResizer.js";
 import GridData from "./GridData .js";
 import SelectionManager from "./SelectionManager.js";
+import CommandManager from "./CommandManager.js";
 
 /**
  * Represents the main spreadsheet component that handles rendering, scrolling,
@@ -17,6 +18,33 @@ class Spreadsheet {
      */
     constructor(config) {
         this.config = config;
+
+        //create #scrollContainer div and append to body
+        const scrollContainer = document.createElement("div");
+        scrollContainer.id = "scrollContainer";
+        document.body.prepend(scrollContainer);
+
+        const fakeContent = document.createElement("div");
+        fakeContent.id = "fakeContent";
+        scrollContainer.appendChild(fakeContent);
+        const rowHeader = document.createElement("div");
+        rowHeader.id = "rowHeader";
+        scrollContainer.appendChild(rowHeader);
+        const colHeader = document.createElement("div");
+        colHeader.id = "colHeader";
+        scrollContainer.appendChild(colHeader);
+        const grid = document.createElement("div");
+        grid.id = "grid";
+        scrollContainer.appendChild(grid);
+
+        const topLeft = document.createElement("div");
+        topLeft.id = "topLeft";
+        scrollContainer.appendChild(topLeft);
+
+        const input = document.createElement("input");
+        input.id = "input";
+        input.type = "text";
+        scrollContainer.appendChild(input);
 
         //dynamic sizes of row and col
         this.colWidths = new Array(this.config.totalCols).fill(
@@ -53,6 +81,9 @@ class Spreadsheet {
         this.isRowResizeIntent = false; //Shared coordination flag
 
         this.cellEditor = new CellEditor(this);
+
+        this.commandManager = new CommandManager();
+        this.bindShortcuts();
 
         // Initial render
         this.grid.draw(0, 0);
@@ -108,18 +139,20 @@ class Spreadsheet {
 
                 // console.log(this.rowHeader.canvas.style.left, " ", scrollLeft)
                 this.rowHeader.setPosition(
-                    rowSum + this.config.cellHeight,
+                    rowSum + this.config.cellHeight + this.config.topPadding,
                     scrollLeft
                 );
                 this.colHeader.setPosition(
-                    scrollTop,
+                    scrollTop + this.config.topPadding,
                     colSum + this.config.rowWidth
                 );
                 this.grid.setPosition(
-                    rowSum + this.config.cellHeight,
+                    rowSum + this.config.cellHeight + this.config.topPadding,
                     colSum + this.config.rowWidth
                 );
-                this.topLeft.style.top = `${scrollTop}px`;
+                this.topLeft.style.top = `${
+                    scrollTop + this.config.topPadding
+                }px`;
                 this.topLeft.style.left = `${scrollLeft}px`;
 
                 this.colHeader.draw(this.currentStartCol);
@@ -162,6 +195,23 @@ class Spreadsheet {
      */
     updateAfterResize() {
         this.handleScroll();
+    }
+
+    bindShortcuts() {
+        window.addEventListener("keydown", (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === "z") {
+                e.preventDefault();
+                this.commandManager.undo();
+            }
+
+            if (
+                (e.ctrlKey || e.metaKey) &&
+                (e.key === "y" || (e.shiftKey && e.key === "Z"))
+            ) {
+                e.preventDefault();
+                this.commandManager.redo();
+            }
+        });
     }
 }
 

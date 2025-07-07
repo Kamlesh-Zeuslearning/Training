@@ -1,3 +1,5 @@
+import ResizeRowCommand from "./ResizeRowCommand.js";
+
 /**
  * Class for handling row resizing in the spreadsheet.
  * This class manages mouse events and updates row heights during resizing.
@@ -98,9 +100,20 @@ export default class RowResizer {
     onMouseUp() {
         if (this.rowResize) {
             this.rowResize = false; // Stop resizing
+
+            const finalHeight = this.spreadsheet.rowHeights[this.rowIndex];
+            if (finalHeight !== this.startRowHeight) {
+                const cmd = new ResizeRowCommand(
+                    this.spreadsheet,
+                    this.rowIndex,
+                    this.startRowHeight,
+                    finalHeight
+                );
+                this.spreadsheet.commandManager.executeCommand(cmd); // Execute the resize command
+            }
             this.rowIndex = null; // Clear the row index
         }
-        this.spreadsheet.isRowResizeIntent;
+        this.spreadsheet.isRowResizeIntent = false;
     }
 
     /**

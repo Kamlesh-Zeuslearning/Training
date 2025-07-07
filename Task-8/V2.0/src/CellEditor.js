@@ -1,3 +1,5 @@
+import EditCellCommand from "./EditCellCommand.js";
+
 class CellEditor {
     /**
      * @param {Spreadsheet} spreadsheet - Reference to the main spreadsheet instance.
@@ -77,7 +79,7 @@ class CellEditor {
         const rowSum = this.spreadsheet.sumHeight(0, row);
         const colSum = this.spreadsheet.sumWidths(0, col);
 
-        const top = rowSum + config.colHeight;
+        const top = rowSum + config.colHeight + config.topPadding;
         const left = colSum + config.rowWidth;
 
         this.inputField.style.top = `${top}px`;
@@ -124,12 +126,20 @@ class CellEditor {
     commitInput() {
         const value = this.inputField.value;
         const { row, col } = this.currentCell || {};
-        if (value === "") {
-            this.spreadsheet.gridData.clearCell(row, col);
-        } else {
-            this.spreadsheet.gridData.setCellValue(row, col, value);
-        }
+        if (row == null || col == null) return;
 
+        const saveValue = this.spreadsheet.gridData.getCellValue(row, col);
+        if (value === "" && saveValue === null) {
+            // If the value is empty, clear the cell
+            this.spreadsheet.gridData.clearCell(row, col);
+        } else if (saveValue == value) {
+            //no change
+        } else {
+            // Otherwise, set the new value
+
+            const cmd = new EditCellCommand(this.spreadsheet, row, col, value);
+            this.spreadsheet.commandManager.executeCommand(cmd);
+        }
         this.inputField.value = "";
     }
 

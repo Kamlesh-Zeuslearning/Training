@@ -1,3 +1,5 @@
+import ResizeColumnCommand from "./ResizeColumnCommand.js";
+
 export default class ColumnResizer {
     constructor(spreadsheet) {
         this.spreadsheet = spreadsheet;
@@ -48,11 +50,24 @@ export default class ColumnResizer {
 
         this.spreadsheet.colHeader.canvas.style.cursor =
             this.colIndex === null ? "default" : "col-resize";
+
+        // if(e.clientY - th)
+        // const rect2 = .getBoundingClientRect()
+
+        // console.log(rect2.top)
+
+        // console.log(e.clientY, this.spreadsheet.colHeader.canvas.offsetTop)
+        if (this.colIndex !== null) {
+            if (e.clientY <= 60) {
+                this.spreadsheet.colHeader.canvas.style.cursor = "cell";
+            } else {
+                this.spreadsheet.colHeader.canvas.style.cursor = "col-resize";
+            }
+        }
     }
 
     onMouseDown(e) {
         if (this.colIndex === null) return;
-
         this.resize = true;
         this.startX = e.clientX;
         this.startColWidth = this.spreadsheet.colWidths[this.colIndex];
@@ -61,9 +76,21 @@ export default class ColumnResizer {
     onMouseUp() {
         if (this.resize) {
             this.resize = false;
+
+            const finalWidth = this.spreadsheet.colWidths[this.colIndex];
+            if (finalWidth !== this.startColWidth) {
+                const cmd = new ResizeColumnCommand(
+                    this.spreadsheet,
+                    this.colIndex,
+                    this.startColWidth,
+                    finalWidth
+                );
+                this.spreadsheet.commandManager.executeCommand(cmd);
+            }
             this.colIndex = null;
         }
         this.spreadsheet.isColResizeIntent = false; //flag
+        // console.log(this.spreadsheet.isSelectingRange)
     }
 
     onMouseResize(e) {
