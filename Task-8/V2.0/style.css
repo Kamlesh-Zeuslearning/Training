@@ -22,9 +22,9 @@ body {
     max-width: calc(1000 * 50px);
 }
 
-#container canvas {
+#grid canvas {
     position: absolute;
-    top: 30px;
+    top: 80px;
     left: 50px;
     z-index: 10;
 }
@@ -33,7 +33,7 @@ body {
     position: absolute;
     z-index: 12;
     background-color: #f5f5f5;
-    top: 30px;
+    top: 80px;
 }
 
 #colHeader canvas {
@@ -41,6 +41,7 @@ body {
     z-index: 12;
     background-color: #f5f5f5;
     left: 50px;
+    top: 50px;
 }
 
 #topLeft {
@@ -51,13 +52,45 @@ body {
     width: 50px;
     border-bottom: 1px solid #ccc;
     border-right: 1px solid #ccc;
+    top: 50px;
 }
 
-input {
+#input {
     display: none;
-    z-index: 11;
+    z-index: 10;
     font-size: 12px;
     position: absolute;
     border: 1px solid rgb(0, 177, 0);
     outline: none;
+}
+
+#toolbar {
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    gap: 10px;
+    background-color: #f5f5f5;
+    border-bottom: 1px solid #ccc;
+    height: 50px;
+    width: 100vw;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+}
+
+.toolbar-btn {
+    background-color: #ffffff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.toolbar-btn:hover {
+    background-color: #e6f2ff;
+    border-color: #66afe9;
 }

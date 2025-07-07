@@ -7,14 +7,13 @@
         <title>Sheet</title>
     </head>
     <body>
-        <div id="scrollContainer">
-            <!-- Fake height for scrolling -->
-            <div id="fakeContent"></div>
-            <div id="rowHeader"></div>
-            <div id="colHeader"></div>
-            <div id="topLeft"></div>
-            <div id="container" class="container"></div>
-            <input type="text" name="input" id="input">
+        <div id="toolbar">
+            <label for="loadFile" class="toolbar-btn">📂 Upload</label>
+            <input type="file" id="loadFile" hidden />
+
+            <button id="sumBtn" class="toolbar-btn">∑ Sum</button>
+            <button id="minBtn" class="toolbar-btn">↓ Min</button>
+            <button id="maxBtn" class="toolbar-btn">↑ Max</button>
         </div>
 
         <script type="module" src="index.js"></script>
