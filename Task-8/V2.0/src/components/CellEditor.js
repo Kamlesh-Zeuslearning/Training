@@ -1,77 +1,83 @@
 import EditCellCommand from "../commands/EditCellCommand.js";
 
+/**
+ * Manages cell editing in the spreadsheet UI.
+ * Handles rendering the input field, committing edits, and navigating between cells.
+ */
 class CellEditor {
     /**
      * @param {Spreadsheet} spreadsheet - Reference to the main spreadsheet instance.
      */
     constructor(spreadsheet) {
+        /**
+         * Reference to the spreadsheet instance.
+         * @type {Spreadsheet}
+         */
         this.spreadsheet = spreadsheet;
+
+        /**
+         * HTML input field used for editing cells.
+         * @type {HTMLInputElement}
+         */
         this.inputField = document.getElementById("input");
+
+        /**
+         * Currently edited cell position.
+         * @type {{row: number, col: number}|undefined}
+         */
+        this.currentCell = undefined;
 
         this.initListeners();
     }
 
+    /**
+     * Initializes keyboard event listeners on the input field.
+     * Handles Escape, Enter, and Arrow keys for editing and navigation.
+     */
     initListeners() {
-        // Basic input commit on blur (you can expand this for key events later)
-        // this.inputField.addEventListener("blur", () => {
-        //     this.commitInput(); // when you change screen it hides
-        // });
-
         this.inputField.addEventListener("keydown", (e) => {
-            // Placeholder: Escape key cancels input
             if (e.key === "Escape") {
                 this.spreadsheet.selectionManager.startCell = null;
                 this.spreadsheet.selectionManager.endCell = null;
                 this.hideInput();
-            }
-            // handle navigation here
-            // Commit input before navigating
-            else if (
+            } else if (
                 e.key === "ArrowDown" ||
                 e.key === "ArrowUp" ||
                 e.key === "ArrowLeft" ||
                 e.key === "ArrowRight"
             ) {
                 this.commitInput();
+                const cell = this.spreadsheet.selectedCell;
+
                 if (e.key === "ArrowDown") {
-                    this.spreadsheet.selectedCell.row++;
-                } else if (e.key === "ArrowUp") {
-                    if (this.spreadsheet.selectedCell.row > 0) {
-                        this.spreadsheet.selectedCell.row--;
-                    }
+                    cell.row++;
+                } else if (e.key === "ArrowUp" && cell.row > 0) {
+                    cell.row--;
                 } else if (e.key === "ArrowRight") {
-                    this.spreadsheet.selectedCell.col++;
-                } else if (e.key === "ArrowLeft") {
-                    if (this.spreadsheet.selectedCell.col > 0) {
-                        this.spreadsheet.selectedCell.col--;
-                    }
+                    cell.col++;
+                } else if (e.key === "ArrowLeft" && cell.col > 0) {
+                    cell.col--;
                 }
 
-                this.showEditor(
-                    this.spreadsheet.selectedCell.row,
-                    this.spreadsheet.selectedCell.col
-                );
-            }
-
-            // Enter key can also commit the input
-            else if (e.key === "Enter") {
+                this.showEditor(cell.row, cell.col);
+            } else if (e.key === "Enter") {
                 this.commitInput();
+                const cell = this.spreadsheet.selectedCell;
                 if (!e.shiftKey) {
-                    this.spreadsheet.selectedCell.row++;
+                    cell.row++;
                 } else {
-                    this.spreadsheet.selectedCell.row--;
+                    cell.row--;
                 }
-
-                this.showEditor(
-                    this.spreadsheet.selectedCell.row,
-                    this.spreadsheet.selectedCell.col
-                );
+                this.showEditor(cell.row, cell.col);
             }
         });
     }
 
     /**
-     * Show input field at specified row and column.
+     * Displays the input field over the given cell and populates its value if available.
+     *
+     * @param {number} row - The row index of the cell to edit.
+     * @param {number} col - The column index of the cell to edit.
      */
     showEditor(row, col) {
         const config = this.spreadsheet.config;
@@ -97,6 +103,7 @@ class CellEditor {
         } else {
             this.inputField.value = "";
         }
+        
         this.inputField.style.display = "block";
 
         this.currentCell = { row, col };
@@ -116,14 +123,15 @@ class CellEditor {
         );
         this.spreadsheet.colHeader.draw(this.spreadsheet.currentStartCol);
         this.spreadsheet.rowHeader.draw(this.spreadsheet.currentStartRow);
-        // Give a small delay before focusing
+
         setTimeout(() => {
             this.inputField.focus();
-        }, 0); // 0ms delay to let rendering complete first
+        }, 0);
     }
 
     /**
-     * Commit current input value to the data model.
+     * Commits the current value from the input field to the data model using a command.
+     * Clears the input field after committing.
      */
     commitInput() {
         const value = this.inputField.value;
@@ -131,31 +139,33 @@ class CellEditor {
         if (row == null || col == null) return;
 
         const saveValue = this.spreadsheet.gridData.getCellValue(row, col);
+
         if (value === "" && saveValue === null) {
-            // If the value is empty, clear the cell
             this.spreadsheet.gridData.clearCell(row, col);
         } else if (saveValue == value) {
-            //no change
+            // No change
         } else if (value === "") {
             const cmd = new EditCellCommand(this.spreadsheet, row, col, value);
             this.spreadsheet.commandManager.executeCommand(cmd);
             this.spreadsheet.gridData.clearCell(row, col);
-            // console.log(this.spreadsheet.gridData.hasData(row, col));
         } else {
-            // Otherwise, set the new value
-
             const cmd = new EditCellCommand(this.spreadsheet, row, col, value);
             this.spreadsheet.commandManager.executeCommand(cmd);
         }
+
         this.inputField.value = "";
     }
 
+    /**
+     * Hides the input field and resets cell selection state.
+     */
     hideInput() {
         this.inputField.style.display = "none";
         this.inputField.value = "";
         this.currentCell = {};
         this.spreadsheet.selectedCell = null;
         this.spreadsheet.isSelectingRange = false;
+
         this.spreadsheet.grid.draw(
             this.spreadsheet.currentStartRow,
             this.spreadsheet.currentStartCol
