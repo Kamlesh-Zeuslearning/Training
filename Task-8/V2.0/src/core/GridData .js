@@ -76,6 +76,117 @@ class GridData {
         }
         return nonEmptyCells;
     }
+
+    /**
+    * Insert a new column at the specified index.
+    * Shifts all cell data in columns >= colIndex to the right.
+    * @param {number} colIndex - Index where the new column should be inserted.
+    */
+    insertColumn(colIndex) {
+        const newData = new Map();
+
+        for (const [key, value] of this.data.entries()) {
+            const [row, col] = key.split(',').map(Number);
+
+            if (col >= colIndex) {
+                // Shift cell one column to the right
+                const newKey = this._generateCellKey(row, col + 1);
+                newData.set(newKey, value);
+            } else {
+                // Keep cell as-is
+                newData.set(key, value);
+            }
+        }
+
+        this.data = newData;
+    }
+    /**
+     * Insert a new row at the specified index.
+     * Shifts all cell data in rows >= rowIndex down by 1.
+     * @param {number} rowIndex - Index where the new row should be inserted.
+     */
+    insertRow(rowIndex) {
+        const newData = new Map();
+
+        for (const [key, value] of this.data.entries()) {
+            const [row, col] = key.split(',').map(Number);
+
+            if (row >= rowIndex) {
+                // Shift cell one row down
+                const newKey = this._generateCellKey(row + 1, col);
+                newData.set(newKey, value);
+            } else {
+                // Keep cell as-is
+                newData.set(key, value);
+            }
+        }
+
+        this.data = newData;
+    }
+
+
+    /**
+     * Delete a column at the specified index.
+     * Shifts all cell data in columns > colIndex to the left.
+     * @param {number} colIndex - Index of the column to delete.
+     * @returns {Array<{ row: number, col: number, value: any }>} The deleted column's data.
+     */
+    deleteColumn(colIndex) {
+        const newData = new Map();
+        const deletedColumnData = [];
+
+        for (const [key, value] of this.data.entries()) {
+            const [row, col] = key.split(',').map(Number);
+
+            if (col === colIndex) {
+                // Store the data to potentially restore later
+                deletedColumnData.push({ row, col, value });
+                // Don't copy this cell to newData
+            } else if (col > colIndex) {
+                // Shift left
+                const newKey = this._generateCellKey(row, col - 1);
+                newData.set(newKey, value);
+            } else {
+                // Keep as is
+                newData.set(key, value);
+            }
+        }
+
+        this.data = newData;
+        return deletedColumnData;
+    }
+
+    /**
+     * Delete a row at the specified index.
+     * Shifts all cell data in rows > rowIndex up by 1.
+     * @param {number} rowIndex - The index of the row to delete.
+     * @returns {Array<{ row: number, col: number, value: any }>} - The data from the deleted row.
+     */
+    deleteRow(rowIndex) {
+        const newData = new Map();
+        const deletedRowData = [];
+
+        for (const [key, value] of this.data.entries()) {
+            const [row, col] = key.split(',').map(Number);
+
+            if (row === rowIndex) {
+                // Store cells from the deleted row
+                deletedRowData.push({ row, col, value });
+            } else if (row > rowIndex) {
+                // Shift row upward
+                const newKey = this._generateCellKey(row - 1, col);
+                newData.set(newKey, value);
+            } else {
+                // Keep unchanged
+                newData.set(key, value);
+            }
+        }
+
+        this.data = newData;
+        return deletedRowData;
+    }
+
+
 }
 
 export default GridData;
