@@ -1,9 +1,14 @@
 class SelectionManager {
     constructor(spreadsheet) {
         this.spreadsheet = spreadsheet;
+
         this.isSelecting = false;
         this.startCell = null;
         this.endCell = null;
+
+        this.autoScrollInterval = null;
+        this.autoScrollSpeed = 20; // pixels per scroll step
+        this.autoScrollDelay = 50; // ms between scroll steps
 
         this.attachEvents(this.spreadsheet.grid.canvas, "grid");
         this.attachEvents(this.spreadsheet.colHeader.canvas, "colHeader");
@@ -11,18 +16,14 @@ class SelectionManager {
     }
 
     attachEvents(canvas, type) {
-        canvas.addEventListener("mousedown", (e) =>
-            this.handleMouseDown(e, type)
-        );
+        canvas.addEventListener("mousedown", (e) => this.handleMouseDown(e, type));
+
         if (type === "grid") {
-            window.addEventListener("mousemove", (e) =>
-                this.handleMouseMove(e, type)
-            );
+            window.addEventListener("mousemove", (e) => this.handleMouseMove(e, type));
         } else {
-            canvas.addEventListener("mousemove", (e) =>
-                this.handleMouseMove(e, type)
-            );
+            canvas.addEventListener("mousemove", (e) => this.handleMouseMove(e, type));
         }
+
         window.addEventListener("mouseup", () => this.handleMouseUp());
     }
 
@@ -32,17 +33,16 @@ class SelectionManager {
             this.spreadsheet.isRowResizeIntent
         ) {
             return;
-        } // 👈 Skip selection if resizing
+        }
+
         const cell = this.getCellFromMouseEvent(e, type);
-        // console.log(cell)
         if (!cell) return;
 
         this.spreadsheet.isSelectingRange = false;
-
         this.startCell = cell;
         this.endCell = cell;
-
         this.isSelecting = true;
+
         if (type === "grid") {
             this.spreadsheet.isSelectingRange = true;
             this.spreadsheet.selectedCell = { row: cell.row, col: cell.col };
@@ -54,34 +54,72 @@ class SelectionManager {
             this.spreadsheet.selectedRow = cell.row;
             this.spreadsheet.cellEditor.hideInput();
         }
-        this.spreadsheet.grid.draw(
-            this.spreadsheet.currentStartRow,
-            this.spreadsheet.currentStartCol
-        ); // force redraw
-        this.spreadsheet.colHeader.draw(this.spreadsheet.currentStartCol);
-        this.spreadsheet.rowHeader.draw(this.spreadsheet.currentStartRow);
+
+        this.redrawSelection();
     }
 
     handleMouseMove(e, type) {
         if (!this.isSelecting) return;
 
-        const cell = this.getCellFromMouseEvent(e, type);
-        if (!cell) return;
+        const containerRect = this.spreadsheet.scrollContainer.getBoundingClientRect();
+        const threshold = 40;
 
-        this.endCell = cell;
-        this.spreadsheet.grid.draw(
-            this.spreadsheet.currentStartRow,
-            this.spreadsheet.currentStartCol
-        );
-        this.spreadsheet.rowHeader.draw(this.spreadsheet.currentStartRow);
-        this.spreadsheet.colHeader.draw(this.spreadsheet.currentStartCol);
+        let scrollX = 0, scrollY = 0;
+
+        if (e.clientX < containerRect.left + threshold) {
+            scrollX = -this.autoScrollSpeed;
+        } else if (e.clientX > containerRect.right - threshold) {
+            scrollX = this.autoScrollSpeed;
+        }
+
+        if (e.clientY < containerRect.top + threshold) {
+            scrollY = -this.autoScrollSpeed;
+        } else if (e.clientY > containerRect.bottom - threshold) {
+            scrollY = this.autoScrollSpeed;
+        }
+
+        if (scrollX !== 0 || scrollY !== 0) {
+            if (!this.autoScrollInterval) {
+                this.autoScrollInterval = setInterval(() => {
+                    this.spreadsheet.scrollContainer.scrollBy(scrollX, scrollY);
+
+                    // After scroll, update selection based on latest mouse pos
+                    const cell = this.getCellFromMouseEvent(e, type);
+                    if (cell) {
+                        this.endCell = cell;
+                        this.redrawSelection();
+                    }
+                }, this.autoScrollDelay);
+            }
+        } else {
+            if (this.autoScrollInterval) {
+                clearInterval(this.autoScrollInterval);
+                this.autoScrollInterval = null;
+            }
+        }
+
+        // Also update selection normally if mouse inside viewport
+        const cell = this.getCellFromMouseEvent(e, type);
+        if (cell) {
+            this.endCell = cell;
+            this.redrawSelection();
+        }
     }
 
     handleMouseUp() {
         if (!this.isSelecting) return;
-
         this.isSelecting = false;
-        // this.spreadsheet.isSelectingRange = false;
+
+        if (this.autoScrollInterval) {
+            clearInterval(this.autoScrollInterval);
+            this.autoScrollInterval = null;
+        }
+    }
+
+    redrawSelection() {
+        this.spreadsheet.grid.draw(this.spreadsheet.currentStartRow, this.spreadsheet.currentStartCol);
+        this.spreadsheet.rowHeader.draw(this.spreadsheet.currentStartRow);
+        this.spreadsheet.colHeader.draw(this.spreadsheet.currentStartCol);
     }
 
     getSelectedRange() {
@@ -125,11 +163,13 @@ class SelectionManager {
         }
 
         if (row === null || col === null) return null;
+
         if (type === "colHeader") {
             row = -1;
         } else if (type === "rowHeader") {
             col = -1;
         }
+
         return { row, col };
     }
 }
