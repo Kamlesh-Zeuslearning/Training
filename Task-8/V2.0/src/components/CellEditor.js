@@ -116,13 +116,10 @@ class CellEditor {
             row: this.spreadsheet.selectedCell.row,
             col: this.spreadsheet.selectedCell.col,
         };
-
-        this.spreadsheet.grid.draw(
-            this.spreadsheet.currentStartRow,
-            this.spreadsheet.currentStartCol
-        );
-        this.spreadsheet.colHeader.draw(this.spreadsheet.currentStartCol);
-        this.spreadsheet.rowHeader.draw(this.spreadsheet.currentStartRow);
+        
+        this.spreadsheet.grid.draw();
+        this.spreadsheet.colHeader.draw();
+        this.spreadsheet.rowHeader.draw();
 
         setTimeout(() => {
             this.inputField.focus();
@@ -166,12 +163,9 @@ class CellEditor {
         this.spreadsheet.selectedCell = null;
         this.spreadsheet.isSelectingRange = false;
 
-        this.spreadsheet.grid.draw(
-            this.spreadsheet.currentStartRow,
-            this.spreadsheet.currentStartCol
-        );
-        this.spreadsheet.colHeader.draw(this.spreadsheet.currentStartCol);
-        this.spreadsheet.rowHeader.draw(this.spreadsheet.currentStartRow);
+        this.spreadsheet.grid.draw();
+        this.spreadsheet.colHeader.draw();
+        this.spreadsheet.rowHeader.draw();
     }
 }
 

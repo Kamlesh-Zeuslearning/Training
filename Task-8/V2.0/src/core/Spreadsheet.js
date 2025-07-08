@@ -76,6 +76,8 @@ class Spreadsheet {
         this.selectedRow = null; // Initially no rows selected
         this.selectedColumn = null; // Initially no columns selected
         this.isSelectingRange = false;
+        this.isColumnAdder = false;
+        this.isRowAdder = false;
 
         this.isColResizeIntent = false; // Shared coordination flag
         this.isRowResizeIntent = false; //Shared coordination flag
@@ -86,9 +88,9 @@ class Spreadsheet {
         this.bindShortcuts();
 
         // Initial render
-        this.grid.draw(0, 0);
-        this.rowHeader.draw(0);
-        this.colHeader.draw(0);
+        this.grid.draw();
+        this.rowHeader.draw();
+        this.colHeader.draw();
 
         // Create Resizer instances
         this.columnResizer = new ColumnResizer(this);
@@ -137,7 +139,7 @@ class Spreadsheet {
                 this.currentStartCol = startCol;
                 this.currentStartRow = startRow;
 
-                // console.log(this.rowHeader.canvas.style.left, " ", scrollLeft)
+                
                 this.rowHeader.setPosition(
                     rowSum + this.config.cellHeight + this.config.topPadding,
                     scrollLeft
@@ -155,9 +157,9 @@ class Spreadsheet {
                 }px`;
                 this.topLeft.style.left = `${scrollLeft}px`;
 
-                this.colHeader.draw(this.currentStartCol);
-                this.rowHeader.draw(this.currentStartRow);
-                this.grid.draw(this.currentStartRow, this.currentStartCol);
+                this.colHeader.draw();
+                this.rowHeader.draw();
+                this.grid.draw();
             });
         }
     }
@@ -194,7 +196,9 @@ class Spreadsheet {
      * Updates the view after a resize operation (row or column).
      */
     updateAfterResize() {
-        this.handleScroll();
+        this.colHeader.draw();
+        this.rowHeader.draw();
+        this.grid.draw();
     }
 
     bindShortcuts() {

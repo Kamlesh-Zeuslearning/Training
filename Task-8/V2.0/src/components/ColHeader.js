@@ -49,7 +49,8 @@ class ColHeader {
      * Renders the column headers, grid lines, and column labels.
      * @param {number} startCol - The index of the first visible column.
      */
-    draw(startCol) {
+    draw() {
+        const startCol = this.spreadsheet.currentStartCol;
         const { cellWidth, visibleCols } = this.config;
         const ctx = this.ctx;
 

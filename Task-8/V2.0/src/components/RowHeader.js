@@ -50,10 +50,11 @@ class RowHeader {
      * Draws the row numbers and horizontal lines on the row header.
      * @param {number} startRow - The index of the first visible row.
      */
-    draw(startRow) {
+    draw() {
+        const startRow = this.spreadsheet.currentStartRow;
         const { cellHeight, visibleRows } = this.config;
         const ctx = this.ctx;
-        // console.log(this.config.rowWidth, "hi")
+        
         ctx.clearRect(0, 0, this.config.rowWidth, this.canvasHeight);
         ctx.beginPath();
 

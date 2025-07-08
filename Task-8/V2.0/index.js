@@ -47,9 +47,9 @@ document.getElementById('loadFile').addEventListener('change', async (e) => {
         });
 
         // Re-render grid with loaded data
-        spreadsheet.grid.draw(spreadsheet.currentStartRow, spreadsheet.currentStartCol);
-        spreadsheet.rowHeader.draw(spreadsheet.currentStartRow);
-        spreadsheet.colHeader.draw(spreadsheet.currentStartCol);
+        spreadsheet.grid.draw();
+        spreadsheet.rowHeader.draw();
+        spreadsheet.colHeader.draw();
         
     } catch (err) {
         alert("Failed to load file: " + err.message);

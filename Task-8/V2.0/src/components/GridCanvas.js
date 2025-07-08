@@ -49,14 +49,15 @@ class GridCanvas {
      * @param {number} startRow - Index of the first row to render.
      * @param {number} startCol - Index of the first column to render.
      */
-    draw(startRow, startCol) {
-        const { cellWidth, cellHeight, visibleRows, visibleCols, totalCols } =
-            this.config;
+    draw() {
+        const { visibleRows, visibleCols } = this.config;
+        const startRow = this.spreadsheet.currentStartRow;
+        const startCol = this.spreadsheet.currentStartCol;
         const ctx = this.ctx;
         ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
         ctx.beginPath();
 
-        // console.log("hi")
+       
         // Highlight selected column and row
         if (
             this.spreadsheet.selectedColumn !== null ||
@@ -148,7 +149,7 @@ class GridCanvas {
         if (this.spreadsheet.isSelectingRange) {
             this.highlightSelectedRange();
         }
-        if(this.spreadsheet.selectionManager){
+        if (this.spreadsheet.selectionManager) {
             this.updateToolbarButtons();
         }
     }
@@ -268,7 +269,7 @@ class GridCanvas {
     updateToolbarButtons() {
         const range = this.spreadsheet.selectionManager.getSelectedRange();
         const isValid = !!range;
-        
+
         const buttons = ["sumBtn", "minBtn", "maxBtn", "countBtn", "avgBtn"];
         buttons.forEach((id) => {
             document.getElementById(id).disabled = !isValid;

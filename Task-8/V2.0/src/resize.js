@@ -26,9 +26,9 @@ class Spreadsheet {
         this.updateFakeContentSize();
 
         // Initial render
-        this.grid.draw(this.currentStartRow, this.currentStartCol);
-        this.rowHeader.draw(this.currentStartRow);
-        this.colHeader.draw(this.currentStartCol);
+        this.grid.draw();
+        this.rowHeader.draw();
+        this.colHeader.draw();
 
         // Bind scroll event
         this.scrollContainer.addEventListener("scroll", () =>
@@ -109,9 +109,9 @@ class Spreadsheet {
         this.colHeader.updateCanvasSize();
 
         // Draw visible parts
-        this.grid.draw(this.currentStartRow, this.currentStartCol);
-        this.rowHeader.draw(this.currentStartRow);
-        this.colHeader.draw(this.currentStartCol);
+        this.grid.draw();
+        this.rowHeader.draw();
+        this.colHeader.draw();
     }
 
     initColumnResizing() {

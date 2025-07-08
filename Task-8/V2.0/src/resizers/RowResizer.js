@@ -84,14 +84,18 @@ export default class RowResizer {
         if (this.rowIndex !== null) {
             if (e.clientX <= 25) {
                 this.addRow = true
-
+                this.spreadsheet.isRowAdder = true
                 this.spreadsheet.rowHeader.canvas.style.cursor = "cell";
             } else {
-                this.addRow = false
+                this.addRow = false;
+                this.spreadsheet.isRowAdder = false
                 // 👇 Shared flag — tells the selection handler that resizing is "armed"
                 this.spreadsheet.isRowResizeIntent = this.colIndex !== null;
                 this.spreadsheet.colHeader.canvas.style.cursor = "col-resize";
             }
+        }
+        else{
+            this.spreadsheet.isRowAdder = false
         }
     }
 
@@ -116,7 +120,7 @@ export default class RowResizer {
      * Handles mouse up event to stop the row resizing.
      */
     onMouseUp() {
-
+        
         if (this.rowResize) {
             this.rowResize = false; // Stop resizing
 
@@ -152,13 +156,6 @@ export default class RowResizer {
                 // Set a minimum height constraint
                 this.spreadsheet.rowHeights[this.rowIndex] = newHeight;
                 this.spreadsheet.updateAfterResize(); // Update the view after resizing
-                let selectedCell = this.spreadsheet.selectedCell;
-                if (selectedCell) {
-                    this.spreadsheet.cellEditor.showEditor(
-                        selectedCell.row,
-                        selectedCell.col
-                    ); //resize celleditor
-                }
             }
         });
     }

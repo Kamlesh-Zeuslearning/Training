@@ -62,7 +62,10 @@ export default class ColumnResizer {
         this.colIndex = null;
 
         for (let c = 0; c < this.spreadsheet.config.visibleCols; c++) {
-            widthSum += this.spreadsheet.colWidths[this.spreadsheet.currentStartCol + c];
+            widthSum +=
+                this.spreadsheet.colWidths[
+                    this.spreadsheet.currentStartCol + c
+                ];
             if (Math.abs(mouseX - widthSum) < this.threshold) {
                 this.colIndex = this.spreadsheet.currentStartCol + c;
                 break;
@@ -75,12 +78,16 @@ export default class ColumnResizer {
         if (this.colIndex !== null) {
             if (e.clientY <= 60) {
                 this.addCol = true;
+                this.spreadsheet.isColumnAdder = true;
                 this.spreadsheet.colHeader.canvas.style.cursor = "cell";
             } else {
                 this.addCol = false;
-                this.spreadsheet.isColResizeIntent = true;
+                this.spreadsheet.isColumnAdder = false;
+
                 this.spreadsheet.colHeader.canvas.style.cursor = "col-resize";
             }
+        } else {
+            this.spreadsheet.isColumnAdder = false;
         }
     }
 
@@ -92,12 +99,17 @@ export default class ColumnResizer {
         if (this.colIndex === null) return;
 
         if (this.addCol) {
-            const cmd = new AddColumnCommand(this.spreadsheet, this.colIndex);
+            const cmd = new AddColumnCommand(
+                this.spreadsheet,
+                this.colIndex + 1
+            );
             this.spreadsheet.commandManager.executeCommand(cmd);
+
             return;
         }
 
         this.resize = true;
+        this.spreadsheet.isColResizeIntent = true;
         this.startX = e.clientX;
         this.startColWidth = this.spreadsheet.colWidths[this.colIndex];
     }
@@ -106,9 +118,10 @@ export default class ColumnResizer {
      * Handles mouse up event to finalize a column resize operation.
      */
     onMouseUp() {
+        console.log(this.spreadsheet.selectionManager.getSelectedRange(), "1")
         if (this.resize) {
             this.resize = false;
-
+        
             const finalWidth = this.spreadsheet.colWidths[this.colIndex];
             if (finalWidth !== this.startColWidth) {
                 const cmd = new ResizeColumnCommand(
@@ -121,7 +134,7 @@ export default class ColumnResizer {
             }
             this.colIndex = null;
         }
-
+        console.log(this.spreadsheet.selectionManager.getSelectedRange())
         this.spreadsheet.isColResizeIntent = false;
     }
 
@@ -139,14 +152,6 @@ export default class ColumnResizer {
             if (newWidth > 20) {
                 this.spreadsheet.colWidths[this.colIndex] = newWidth;
                 this.spreadsheet.updateAfterResize();
-
-                const selectedCell = this.spreadsheet.selectedCell;
-                if (selectedCell) {
-                    this.spreadsheet.cellEditor.showEditor(
-                        selectedCell.row,
-                        selectedCell.col
-                    );
-                }
             }
         });
     }

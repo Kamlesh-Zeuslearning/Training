@@ -30,7 +30,9 @@ class SelectionManager {
     handleMouseDown(e, type) {
         if (
             this.spreadsheet.isColResizeIntent ||
-            this.spreadsheet.isRowResizeIntent
+            this.spreadsheet.isRowResizeIntent ||
+            this.spreadsheet.isColumnAdder ||
+            this.spreadsheet.isRowAdder
         ) {
             return;
         }
@@ -117,9 +119,9 @@ class SelectionManager {
     }
 
     redrawSelection() {
-        this.spreadsheet.grid.draw(this.spreadsheet.currentStartRow, this.spreadsheet.currentStartCol);
-        this.spreadsheet.rowHeader.draw(this.spreadsheet.currentStartRow);
-        this.spreadsheet.colHeader.draw(this.spreadsheet.currentStartCol);
+        this.spreadsheet.grid.draw();
+        this.spreadsheet.rowHeader.draw();
+        this.spreadsheet.colHeader.draw();
     }
 
     getSelectedRange() {

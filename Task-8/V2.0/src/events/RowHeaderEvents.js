@@ -29,12 +29,9 @@ class RowHeaderEvents {
             if (this.spreadsheet.selectedRow !== null) {
                 this.spreadsheet.selectedRow = null;
 
-                this.spreadsheet.grid.draw(
-                    this.spreadsheet.currentStartRow,
-                    this.spreadsheet.currentStartCol
-                );
-                this.spreadsheet.rowHeader.draw(this.spreadsheet.currentStartRow);
-                this.spreadsheet.colHeader.draw(this.spreadsheet.currentStartCol);
+                this.spreadsheet.grid.draw();
+                this.spreadsheet.rowHeader.draw();
+                this.spreadsheet.colHeader.draw();
             }
         });
 
@@ -46,12 +43,9 @@ class RowHeaderEvents {
             ) {
                 this.spreadsheet.selectedRow = null;
 
-                this.spreadsheet.grid.draw(
-                    this.spreadsheet.currentStartRow,
-                    this.spreadsheet.currentStartCol
-                );
-                this.spreadsheet.rowHeader.draw(this.spreadsheet.currentStartRow);
-                this.spreadsheet.colHeader.draw(this.spreadsheet.currentStartCol);
+                this.spreadsheet.grid.draw();
+                this.spreadsheet.rowHeader.draw();
+                this.spreadsheet.colHeader.draw();
             }
         });
     }
