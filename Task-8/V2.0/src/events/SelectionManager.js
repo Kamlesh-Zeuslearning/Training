@@ -57,7 +57,6 @@ class SelectionManager {
             this.spreadsheet.cellEditor.hideInput();
         }
 
-        this.redrawSelection();
     }
 
     handleMouseMove(e, type) {
