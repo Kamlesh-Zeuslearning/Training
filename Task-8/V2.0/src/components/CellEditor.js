@@ -35,18 +35,25 @@ class CellEditor {
      * Handles Escape, Enter, and Arrow keys for editing and navigation.
      */
     initListeners() {
-        this.inputField.addEventListener("keydown", (e) => {
+        window.addEventListener("keydown", (e) => {
             if (e.key === "Escape") {
-                this.spreadsheet.selectionManager.startCell = null;
-                this.spreadsheet.selectionManager.endCell = null;
-                this.hideInput();
+                if (document.activeElement === this.inputField) {
+                    this.inputField.blur();
+                } else {
+                    this.spreadsheet.selectionManager.startCell = null;
+                    this.spreadsheet.selectionManager.endCell = null;
+
+                    this.hideInput();
+                }
             } else if (
                 e.key === "ArrowDown" ||
                 e.key === "ArrowUp" ||
                 e.key === "ArrowLeft" ||
-                e.key === "ArrowRight"
+                e.key === "ArrowRight" ||
+                e.key === "Enter"
             ) {
-                this.commitInput();
+                e.preventDefault();
+                if (this.spreadsheet.selectedCell === null) return;
                 const cell = this.spreadsheet.selectedCell;
 
                 if (e.key === "ArrowDown") {
@@ -57,18 +64,26 @@ class CellEditor {
                     cell.col++;
                 } else if (e.key === "ArrowLeft" && cell.col > 0) {
                     cell.col--;
+                } else if (e.key === "Enter") {
+                    const cell = this.spreadsheet.selectedCell;
+                    if (!e.shiftKey) {
+                        cell.row++;
+                    } else if (cell.row > 0) {
+                        cell.row--;
+                    }
                 }
 
+                this.spreadsheet.selectionManager.startCell = {
+                    row: this.spreadsheet.selectedCell.row,
+                    col: this.spreadsheet.selectedCell.col,
+                };
+                this.spreadsheet.selectionManager.endCell = {
+                    row: this.spreadsheet.selectedCell.row,
+                    col: this.spreadsheet.selectedCell.col,
+                };
                 this.showEditor(cell.row, cell.col);
-            } else if (e.key === "Enter") {
-                this.commitInput();
-                const cell = this.spreadsheet.selectedCell;
-                if (!e.shiftKey) {
-                    cell.row++;
-                } else {
-                    cell.row--;
-                }
-                this.showEditor(cell.row, cell.col);
+            } else {
+                this.inputField.focus();
             }
         });
     }
@@ -80,6 +95,8 @@ class CellEditor {
      * @param {number} col - The column index of the cell to edit.
      */
     showEditor(row, col) {
+        this.commitInput();
+
         const config = this.spreadsheet.config;
         const rowHeights = this.spreadsheet.rowHeights;
         const colWidths = this.spreadsheet.colWidths;
@@ -111,10 +128,6 @@ class CellEditor {
         this.spreadsheet.grid.draw();
         this.spreadsheet.colHeader.draw();
         this.spreadsheet.rowHeader.draw();
-
-        setTimeout(() => {
-            this.inputField.focus();
-        }, 0);
     }
 
     /**
@@ -122,6 +135,7 @@ class CellEditor {
      * Clears the input field after committing.
      */
     commitInput() {
+        this.inputField.blur();
         const value = this.inputField.value;
         const { row, col } = this.currentCell || {};
         if (row == null || col == null) return;
