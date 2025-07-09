@@ -103,20 +103,11 @@ class CellEditor {
         } else {
             this.inputField.value = "";
         }
-        
+
         this.inputField.style.display = "block";
 
         this.currentCell = { row, col };
 
-        this.spreadsheet.selectionManager.startCell = {
-            row: this.spreadsheet.selectedCell.row,
-            col: this.spreadsheet.selectedCell.col,
-        };
-        this.spreadsheet.selectionManager.endCell = {
-            row: this.spreadsheet.selectedCell.row,
-            col: this.spreadsheet.selectedCell.col,
-        };
-        
         this.spreadsheet.grid.draw();
         this.spreadsheet.colHeader.draw();
         this.spreadsheet.rowHeader.draw();
