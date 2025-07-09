@@ -118,10 +118,9 @@ export default class ColumnResizer {
      * Handles mouse up event to finalize a column resize operation.
      */
     onMouseUp() {
-        console.log(this.spreadsheet.selectionManager.getSelectedRange(), "1")
         if (this.resize) {
             this.resize = false;
-        
+
             const finalWidth = this.spreadsheet.colWidths[this.colIndex];
             if (finalWidth !== this.startColWidth) {
                 const cmd = new ResizeColumnCommand(
@@ -134,7 +133,6 @@ export default class ColumnResizer {
             }
             this.colIndex = null;
         }
-        console.log(this.spreadsheet.selectionManager.getSelectedRange())
         this.spreadsheet.isColResizeIntent = false;
     }
 
@@ -151,7 +149,7 @@ export default class ColumnResizer {
 
             if (newWidth > 20) {
                 this.spreadsheet.colWidths[this.colIndex] = newWidth;
-                this.spreadsheet.updateAfterResize();
+                this.spreadsheet.render();
             }
         });
     }

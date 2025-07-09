@@ -88,9 +88,7 @@ class Spreadsheet {
         this.bindShortcuts();
 
         // Initial render
-        this.grid.draw();
-        this.rowHeader.draw();
-        this.colHeader.draw();
+        this.render();
 
         // Create Resizer instances
         this.columnResizer = new ColumnResizer(this);
@@ -157,9 +155,7 @@ class Spreadsheet {
                 }px`;
                 this.topLeft.style.left = `${scrollLeft}px`;
 
-                this.colHeader.draw();
-                this.rowHeader.draw();
-                this.grid.draw();
+                this.render();
             });
         }
     }
@@ -195,7 +191,7 @@ class Spreadsheet {
     /**
      * Updates the view after a resize operation (row or column).
      */
-    updateAfterResize() {
+    render() {
         this.colHeader.draw();
         this.rowHeader.draw();
         this.grid.draw();

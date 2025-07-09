@@ -56,9 +56,7 @@ class EditCellCommand {
      * @private
      */
     _refreshGrid() {
-        this.spreadsheet.grid.draw();
-        this.spreadsheet.colHeader.draw();
-        this.spreadsheet.rowHeader.draw();
+        this.spreadsheet.render();
     }
 }
 

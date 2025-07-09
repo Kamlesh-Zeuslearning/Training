@@ -29,9 +29,7 @@ class RowHeaderEvents {
             if (this.spreadsheet.selectedRow !== null) {
                 this.spreadsheet.selectedRow = null;
 
-                this.spreadsheet.grid.draw();
-                this.spreadsheet.rowHeader.draw();
-                this.spreadsheet.colHeader.draw();
+                this.spreadsheet.render()
             }
         });
 
@@ -43,9 +41,7 @@ class RowHeaderEvents {
             ) {
                 this.spreadsheet.selectedRow = null;
 
-                this.spreadsheet.grid.draw();
-                this.spreadsheet.rowHeader.draw();
-                this.spreadsheet.colHeader.draw();
+                this.spreadsheet.render();
             }
         });
     }

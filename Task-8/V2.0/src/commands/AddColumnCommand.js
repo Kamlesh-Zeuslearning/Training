@@ -35,7 +35,7 @@ class AddColumnCommand {
     execute() {
         this.spreadsheet.colWidths.splice(this.colIndex, 0, this.oldWidth);
         this.spreadsheet.gridData.insertColumn(this.colIndex);
-        this.spreadsheet.updateAfterResize();
+        this.spreadsheet.render();
     }
 
     /**
@@ -51,7 +51,7 @@ class AddColumnCommand {
             this.spreadsheet.gridData.setCellValue(row, col, value);
         }
 
-        this.spreadsheet.updateAfterResize();
+        this.spreadsheet.render();
     }
 }
 

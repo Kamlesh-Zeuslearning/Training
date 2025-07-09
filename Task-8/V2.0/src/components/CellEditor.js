@@ -36,6 +36,7 @@ class CellEditor {
      */
     initListeners() {
         window.addEventListener("keydown", (e) => {
+            if(e.ctrlKey) return;
             if (e.key === "Escape") {
                 if (document.activeElement === this.inputField) {
                     this.inputField.blur();
@@ -125,9 +126,7 @@ class CellEditor {
 
         this.currentCell = { row, col };
 
-        this.spreadsheet.grid.draw();
-        this.spreadsheet.colHeader.draw();
-        this.spreadsheet.rowHeader.draw();
+        this.spreadsheet.render()
     }
 
     /**
@@ -168,9 +167,7 @@ class CellEditor {
         this.spreadsheet.selectedCell = null;
         this.spreadsheet.isSelectingRange = false;
 
-        this.spreadsheet.grid.draw();
-        this.spreadsheet.colHeader.draw();
-        this.spreadsheet.rowHeader.draw();
+        this.spreadsheet.render();
     }
 }
 

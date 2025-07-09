@@ -38,10 +38,12 @@ class ResizeColumnCommand {
      * @private
      */
     _refresh() {
-        this.spreadsheet.updateAfterResize();
         const selected = this.spreadsheet.selectedCell;
         if (selected) {
             this.spreadsheet.cellEditor.showEditor(selected.row, selected.col);
+        }
+        else{
+            this.spreadsheet.render();
         }
     }
 }

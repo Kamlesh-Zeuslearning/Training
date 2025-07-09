@@ -155,7 +155,7 @@ export default class RowResizer {
             if (newHeight > 20) {
                 // Set a minimum height constraint
                 this.spreadsheet.rowHeights[this.rowIndex] = newHeight;
-                this.spreadsheet.updateAfterResize(); // Update the view after resizing
+                this.spreadsheet.render(); // Update the view after resizing
             }
         });
     }

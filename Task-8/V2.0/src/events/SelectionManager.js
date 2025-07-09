@@ -118,9 +118,7 @@ class SelectionManager {
     }
 
     redrawSelection() {
-        this.spreadsheet.grid.draw();
-        this.spreadsheet.rowHeader.draw();
-        this.spreadsheet.colHeader.draw();
+        this.spreadsheet.render()
     }
 
     getSelectedRange() {

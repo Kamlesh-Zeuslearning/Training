@@ -35,7 +35,7 @@ class AddRowCommand {
     execute() {
         this.spreadsheet.rowHeights.splice(this.rowIndex, 0, this.oldHeight);
         this.spreadsheet.gridData.insertRow(this.rowIndex);
-        this.spreadsheet.updateAfterResize();
+        this.spreadsheet.render();
     }
 
     /**
@@ -51,7 +51,7 @@ class AddRowCommand {
             this.spreadsheet.gridData.setCellValue(row, col, value);
         }
 
-        this.spreadsheet.updateAfterResize();
+        this.spreadsheet.render();
     }
 }
 

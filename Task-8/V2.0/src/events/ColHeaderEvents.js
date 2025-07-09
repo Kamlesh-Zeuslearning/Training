@@ -30,9 +30,7 @@ class ColHeaderEvents {
             ) {
                 this.spreadsheet.selectedColumn = null;
 
-                this.spreadsheet.grid.draw();
-                this.spreadsheet.colHeader.draw();
-                this.spreadsheet.rowHeader.draw();
+                this.spreadsheet.render()
             }
         });
 
@@ -41,9 +39,7 @@ class ColHeaderEvents {
             if (this.spreadsheet.selectedColumn !== null) {
                 this.spreadsheet.selectedColumn = null;
 
-                this.spreadsheet.grid.draw();
-                this.spreadsheet.colHeader.draw();
-                this.spreadsheet.rowHeader.draw();
+                this.spreadsheet.colHeader.render()
             }
         });
     }
