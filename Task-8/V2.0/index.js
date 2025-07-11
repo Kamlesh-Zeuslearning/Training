@@ -6,8 +6,8 @@ const config = {
     cellHeight: 30,
     totalRows: 100000,
     totalCols: 1000,
-    visibleRows: 35,
-    visibleCols: 25,
+    visibleRows: 25,
+    visibleCols: 20,
     rowWidth: 50,
     colHeight: 30,
     topPadding: 50,  
@@ -47,9 +47,7 @@ document.getElementById('loadFile').addEventListener('change', async (e) => {
         });
 
         // Re-render grid with loaded data
-        spreadsheet.grid.draw();
-        spreadsheet.rowHeader.draw();
-        spreadsheet.colHeader.draw();
+        spreadsheet.render()
         
     } catch (err) {
         alert("Failed to load file: " + err.message);

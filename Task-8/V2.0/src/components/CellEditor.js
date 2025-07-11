@@ -165,7 +165,7 @@ class CellEditor {
         this.inputField.value = "";
         this.currentCell = {};
         this.spreadsheet.selectedCell = null;
-        this.spreadsheet.isSelectingRange = false;
+        // this.spreadsheet.isSelectingRange = false;
 
         this.spreadsheet.render();
     }

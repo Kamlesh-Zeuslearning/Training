@@ -1,4 +1,5 @@
-import RowHeaderEvents from "../events/RowHeaderEvents.js";
+// import RowHeaderEvents from "../events/RowHeaderEvents.js";
+import RowSelection from "../events/RowSelection.js";
 
 /**
  * Represents the row header of the spreadsheet.
@@ -12,7 +13,7 @@ class RowHeader {
         this.spreadsheet = spreadsheet;
         this.config = spreadsheet.config;
         this.canvasHeight =
-            this.config.cellHeight * this.config.visibleRows + 300;
+            this.config.cellHeight * this.config.visibleRows + 800;
 
         const { canvas, ctx } = this.createCanvas();
         this.canvas = canvas;
@@ -20,7 +21,8 @@ class RowHeader {
 
         document.getElementById("rowHeader").appendChild(this.canvas);
 
-        this.events = new RowHeaderEvents(this);
+        // this.events = new RowHeaderEvents(this);
+        this.events = new RowSelection(this)
     }
 
     /**
@@ -52,9 +54,9 @@ class RowHeader {
      */
     draw() {
         const startRow = this.spreadsheet.currentStartRow;
-        const { cellHeight, visibleRows } = this.config;
+        let { visibleRows } = this.config;
         const ctx = this.ctx;
-        
+
         ctx.clearRect(0, 0, this.config.rowWidth, this.canvasHeight);
         ctx.beginPath();
 
@@ -74,7 +76,7 @@ class RowHeader {
             const rowY = rowSum - rowHeight / 2;
 
             //if cell is selected
-            if (this.spreadsheet.isSelectingRange) {
+            if (this.spreadsheet.selectedCell) {
                 let selectedRange =
                     this.spreadsheet.selectionManager.getSelectedRange();
                 if (
@@ -135,6 +137,11 @@ class RowHeader {
                 ctx.fillStyle = " #195f3a";
             }
             ctx.fillText(rowIndex + 1, this.config.rowWidth - 5, rowY);
+
+            //if rows are lesser than screen height
+            if (r + 1 === visibleRows && rowSum < innerHeight) {
+                visibleRows++;
+            }
         }
 
         if (this.spreadsheet.selectedColumn !== null) {

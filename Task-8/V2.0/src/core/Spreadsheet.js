@@ -75,7 +75,7 @@ class Spreadsheet {
         this.selectedCell = null; // Initially no cell selected
         this.selectedRow = null; // Initially no rows selected
         this.selectedColumn = null; // Initially no columns selected
-        this.isSelectingRange = false;
+        
         this.isColumnAdder = false;
         this.isRowAdder = false;
 
@@ -94,12 +94,10 @@ class Spreadsheet {
         this.columnResizer = new ColumnResizer(this);
         this.rowResizer = new RowResizer(this);
 
-        //deselect the selected column when clicking outside
-        this.colHeader.events.initColumnSelectionDeselect();
-
-        this.rowHeader.events.initRowSelectionDeselect();
-
         this.selectionManager = new SelectionManager(this);
+        this.grid.events.attachEvents(this.grid.canvas)
+        this.colHeader.events.attachEvents(this.colHeader.canvas)
+        this.rowHeader.events.attachEvents(this.rowHeader.canvas)
     }
 
     /**

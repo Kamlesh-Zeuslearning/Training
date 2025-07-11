@@ -1,3 +1,5 @@
+import CellSelection from "../events/CellSelection.js";
+
 /**
  * GridCanvas is the main canvas for rendering the spreadsheet cells and grid lines.
  */
@@ -9,8 +11,10 @@ class GridCanvas {
     constructor(spreadsheet) {
         this.spreadsheet = spreadsheet;
         this.config = spreadsheet.config;
-        this.canvasWidth = this.config.cellWidth * this.config.visibleCols;
-        this.canvasHeight = this.config.cellHeight * this.config.visibleRows;
+        this.canvasWidth =
+            this.config.cellWidth * this.config.visibleCols + 500;
+        this.canvasHeight =
+            this.config.cellHeight * this.config.visibleRows + 500;
 
         const { canvas, ctx } = this.createCanvas();
         this.canvas = canvas;
@@ -18,7 +22,7 @@ class GridCanvas {
 
         // Adding event listeners for selection
         // this.addSelectionEventListeners();
-
+        this.events = new CellSelection(this)
         document.getElementById("grid").appendChild(this.canvas); //add canvas to the html tree
     }
 
@@ -57,7 +61,6 @@ class GridCanvas {
         ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
         ctx.beginPath();
 
-       
         // Highlight selected column and row
         if (
             this.spreadsheet.selectedColumn !== null ||
@@ -83,6 +86,7 @@ class GridCanvas {
 
             ctx.moveTo(0, rowSum - 0.5);
             ctx.lineTo(this.canvasWidth, rowSum - 0.5);
+            
         }
 
         let colSum = 0;
@@ -146,7 +150,7 @@ class GridCanvas {
                 ];
         }
 
-        if (this.spreadsheet.isSelectingRange) {
+        if (this.spreadsheet.selectedCell) {
             this.highlightSelectedRange();
         }
         if (this.spreadsheet.selectionManager) {
@@ -260,7 +264,7 @@ class GridCanvas {
         // Add border around the selected range
         ctx.strokeStyle = "#107C41";
         ctx.lineWidth = 2;
-        ctx.strokeRect(left + 1, top + 1, width - 2, height - 2); // slight inset for clean look
+        ctx.strokeRect(left-1 , top -1, width +1, height+1 ); // slight inset for clean look
 
         // Reset lineWidth for other drawings
         ctx.lineWidth = 1;

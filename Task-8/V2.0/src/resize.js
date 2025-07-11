@@ -26,9 +26,9 @@ class Spreadsheet {
         this.updateFakeContentSize();
 
         // Initial render
+        this.colHeader.draw();
         this.grid.draw();
         this.rowHeader.draw();
-        this.colHeader.draw();
 
         // Bind scroll event
         this.scrollContainer.addEventListener("scroll", () =>

@@ -1,5 +1,5 @@
-import ColHeaderEvents from "../events/ColHeaderEvents.js";
-
+// import ColHeaderEvents from "../events/ColHeaderEvents.js";
+import ColumnSelection from "../events/ColumnSelection.js";
 /**
  * Represents the column header area of the spreadsheet.
  * Handles rendering column labels and selection logic.
@@ -12,7 +12,7 @@ class ColHeader {
         this.spreadsheet = spreadsheet;
         this.config = spreadsheet.config;
         this.canvasWidth =
-            this.config.cellWidth * this.config.visibleCols + 100;
+            this.config.cellWidth * this.config.visibleCols + 500;
 
         const { canvas, ctx } = this.createCanvas();
         this.canvas = canvas;
@@ -21,7 +21,8 @@ class ColHeader {
         document.getElementById("colHeader").appendChild(this.canvas);
 
         // Delegate event handling
-        this.events = new ColHeaderEvents(this);
+        // this.events = new ColHeaderEvents(this);
+        this.events = new ColumnSelection(this)
     }
 
     /**
@@ -51,7 +52,7 @@ class ColHeader {
      */
     draw() {
         const startCol = this.spreadsheet.currentStartCol;
-        const { cellWidth, visibleCols } = this.config;
+        let { visibleCols } = this.config;
         const ctx = this.ctx;
 
         ctx.clearRect(0, 0, this.canvasWidth, this.config.cellHeight);
@@ -74,7 +75,7 @@ class ColHeader {
             const colX = colSum - colWidth / 2;
 
             //highlight col when cell is selected
-            if (this.spreadsheet.isSelectingRange) {
+            if (this.spreadsheet.selectedCell) {
                 let selectedRange =
                     this.spreadsheet.selectionManager.getSelectedRange();
                 if (
@@ -137,7 +138,13 @@ class ColHeader {
                 ctx.fillStyle = " #195f3a";
             }
             ctx.fillText(colLabel, colX, 15);
+
+            //if cols are lesser than screen width
+            if (c + 1 === visibleCols && colSum < innerWidth) {
+                visibleCols++;
+            }
         }
+        this.spreadsheet.config.visibleCols = visibleCols;
 
         //if any row is selected highlight grid of col
         if (this.spreadsheet.selectedRow !== null) {

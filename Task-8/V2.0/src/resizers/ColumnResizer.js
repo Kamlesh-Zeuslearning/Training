@@ -39,14 +39,14 @@ export default class ColumnResizer {
     addEventListeners() {
         const colHeaderCanvas = this.spreadsheet.colHeader.canvas;
 
-        colHeaderCanvas.addEventListener("mousemove", (e) =>
+        colHeaderCanvas.addEventListener("pointermove", (e) =>
             this.onMouseMove(e)
         );
-        colHeaderCanvas.addEventListener("mousedown", (e) =>
+        colHeaderCanvas.addEventListener("pointerdown", (e) =>
             this.onMouseDown(e)
         );
-        window.addEventListener("mouseup", () => this.onMouseUp());
-        window.addEventListener("mousemove", (e) => this.onMouseResize(e));
+        window.addEventListener("pointerup", () => this.onMouseUp());
+        window.addEventListener("pointermove", (e) => this.onMouseResize(e));
     }
 
     /**

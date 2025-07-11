@@ -32,20 +32,20 @@ export default class RowResizer {
         const rowHeaderCanvas = this.spreadsheet.rowHeader.canvas;
 
         // Detect mouse movement near row resize handles
-        rowHeaderCanvas.addEventListener("mousemove", (e) =>
+        rowHeaderCanvas.addEventListener("pointermove", (e) =>
             this.onMouseMove(e)
         );
 
         // Start resizing when mouse is pressed
-        rowHeaderCanvas.addEventListener("mousedown", (e) =>
+        rowHeaderCanvas.addEventListener("pointerdown", (e) =>
             this.onMouseDown(e)
         );
 
         // End resizing when mouse is released
-        window.addEventListener("mouseup", () => this.onMouseUp());
+        window.addEventListener("pointerup", () => this.onMouseUp());
 
         // Perform the resizing as the mouse moves
-        window.addEventListener("mousemove", (e) => this.onMouseResize(e));
+        window.addEventListener("pointermove", (e) => this.onMouseResize(e));
     }
 
     /**
@@ -105,9 +105,9 @@ export default class RowResizer {
      * @param {MouseEvent} e - The mouse down event
      */
     onMouseDown(e) {
-        if (this.rowIndex == null) return; // Only proceed if a row is selected for resizing
+        if (this.rowIndex == null) return; // Only proceed if a row is selected for resizing/adder
         if (this.addRow) {
-            const cmd = new AddRowCommand(this.spreadsheet, this.rowIndex);
+            const cmd = new AddRowCommand(this.spreadsheet, this.rowIndex+1);
             this.spreadsheet.commandManager.executeCommand(cmd);
             return;
         }
