@@ -1,40 +1,25 @@
 class ColumnSelection {
-    constructor(colHeader) {
-        this.spreadsheet = colHeader.spreadsheet;
-        this.isSelecting = false;
+    constructor(spreadsheet, dispatcher) {
+        this.spreadsheet = spreadsheet;
+
 
         this.autoScrollInterval = null;
         this.autoScrollSpeed = 20; // pixels per scroll step
         this.autoScrollDelay = 50; // ms between scroll steps
-    }
 
-    attachEvents(canvas) {
-        window.addEventListener("pointerdown", (e) => this.handleMouseDown(e));
-        canvas.addEventListener("pointermove", (e) => this.handleMouseMove(e));
-        window.addEventListener("pointerup", () => this.handleMouseUp());
+        dispatcher.register({
+            hitTest: this.hitTest.bind(this),
+            onPointerDown: this.handleMouseDown.bind(this),
+            onPointerMove: this.handleMouseMove.bind(this),
+            onPointerUp: this.handleMouseUp.bind(this),
+        });
     }
 
     hitTest(e) {
-        if (
-            e.clientY < 80 &&
-            this.spreadsheet.isColResizeIntent &&
-            this.spreadsheet.isColumnAdder
-        ) {
-            console.log("canvas; Specific selection")
-        }
+        return e.target === this.spreadsheet.colHeader.canvas;
     }
 
     handleMouseDown(e) {
-        if (e.clientY > 80) {
-            return;
-        }
-        if (
-            this.spreadsheet.isColResizeIntent ||
-            this.spreadsheet.isColumnAdder
-        ) {
-            return;
-        }
-
         const cell = this.spreadsheet.selectionManager.getCellFromMouseEvent(
             e,
             "colHeader"
@@ -44,7 +29,7 @@ class ColumnSelection {
         this.spreadsheet.selectedCell = null;
         this.spreadsheet.selectionManager.startCell = cell;
         this.spreadsheet.selectionManager.endCell = cell;
-        this.isSelecting = true;
+        
         this.spreadsheet.selectedRow = null;
         this.spreadsheet.selectedColumn = cell.col;
 
@@ -52,7 +37,6 @@ class ColumnSelection {
     }
 
     handleMouseMove(e) {
-        if (!this.isSelecting) return;
 
         const containerRect =
             this.spreadsheet.scrollContainer.getBoundingClientRect();
@@ -82,7 +66,7 @@ class ColumnSelection {
                     const cell =
                         this.spreadsheet.selectionManager.getCellFromMouseEvent(
                             e,
-                            "canvas"
+                            "collHeader"
                         );
                     if (cell) {
                         this.spreadsheet.selectionManager.endCell = cell;
@@ -100,7 +84,7 @@ class ColumnSelection {
         // Also update selection normally if mouse inside viewport
         const cell = this.spreadsheet.selectionManager.getCellFromMouseEvent(
             e,
-            "canvas"
+            "collHeader"
         );
         if (cell) {
             this.spreadsheet.selectionManager.endCell = cell;
@@ -109,9 +93,6 @@ class ColumnSelection {
     }
 
     handleMouseUp() {
-        if (!this.isSelecting) return;
-        this.isSelecting = false;
-
         if (this.autoScrollInterval) {
             clearInterval(this.autoScrollInterval);
             this.autoScrollInterval = null;

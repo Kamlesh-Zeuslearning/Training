@@ -1,6 +1,3 @@
-// import RowHeaderEvents from "../events/RowHeaderEvents.js";
-import RowSelection from "../events/RowSelection.js";
-
 /**
  * Represents the row header of the spreadsheet.
  * Responsible for drawing row numbers and horizontal grid lines.
@@ -21,8 +18,6 @@ class RowHeader {
 
         document.getElementById("rowHeader").appendChild(this.canvas);
 
-        // this.events = new RowHeaderEvents(this);
-        this.events = new RowSelection(this)
     }
 
     /**

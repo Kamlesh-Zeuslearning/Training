@@ -1,5 +1,3 @@
-// import ColHeaderEvents from "../events/ColHeaderEvents.js";
-import ColumnSelection from "../events/ColumnSelection.js";
 /**
  * Represents the column header area of the spreadsheet.
  * Handles rendering column labels and selection logic.
@@ -20,9 +18,6 @@ class ColHeader {
 
         document.getElementById("colHeader").appendChild(this.canvas);
 
-        // Delegate event handling
-        // this.events = new ColHeaderEvents(this);
-        this.events = new ColumnSelection(this)
     }
 
     /**

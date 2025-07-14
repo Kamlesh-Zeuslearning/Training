@@ -1,5 +1,3 @@
-import CellSelection from "../events/CellSelection.js";
-
 /**
  * GridCanvas is the main canvas for rendering the spreadsheet cells and grid lines.
  */
@@ -20,9 +18,6 @@ class GridCanvas {
         this.canvas = canvas;
         this.ctx = ctx;
 
-        // Adding event listeners for selection
-        // this.addSelectionEventListeners();
-        this.events = new CellSelection(this)
         document.getElementById("grid").appendChild(this.canvas); //add canvas to the html tree
     }
 
@@ -54,9 +49,7 @@ class GridCanvas {
      * @param {number} startCol - Index of the first column to render.
      */
     draw() {
-        const { visibleRows, visibleCols } = this.config;
-        const startRow = this.spreadsheet.currentStartRow;
-        const startCol = this.spreadsheet.currentStartCol;
+
         const ctx = this.ctx;
         ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
         ctx.beginPath();
@@ -74,23 +67,40 @@ class GridCanvas {
                 this.highlightSelectedRow(startRow, endRow);
             }
         }
-        ctx.strokeStyle = "#ccc"; //setting grid lines color
 
+        this.drawGridLines();
+        this.drawCellContent();
+
+        if (this.spreadsheet.selectedCell) {
+            this.highlightSelectedRange();
+        }
+        if (this.spreadsheet.selectionManager) {
+            this.updateToolbarButtons();
+        }
+    }
+
+    /**
+     * Draw the grid lines (both horizontal and vertical).
+     */
+    drawGridLines() {
+        const { visibleRows, visibleCols } = this.config;
+        const ctx = this.ctx;
+        ctx.strokeStyle = "#ccc"; // Set grid lines color
+        ctx.beginPath();
+
+        // Draw Horizontal Lines
         let rowSum = 0;
-        //drawing horizontal lines
         for (let r = 0; r <= visibleRows; r++) {
             rowSum +=
                 this.spreadsheet.rowHeights[
                     this.spreadsheet.currentStartRow + r
                 ];
-
             ctx.moveTo(0, rowSum - 0.5);
             ctx.lineTo(this.canvasWidth, rowSum - 0.5);
-            
         }
 
+        // Draw Vertical Lines
         let colSum = 0;
-        //drawing vertical lines
         for (let c = 0; c <= visibleCols; c++) {
             colSum +=
                 this.spreadsheet.colWidths[
@@ -100,14 +110,23 @@ class GridCanvas {
             ctx.lineTo(colSum - 0.5, this.canvasHeight);
         }
 
-        ctx.stroke();
+        ctx.stroke(); // Render the grid lines
+    }
 
+    /**
+     * Draw cell content like text and numbers.
+     */
+    drawCellContent() {
+        const startRow = this.spreadsheet.currentStartRow;
+        const startCol = this.spreadsheet.currentStartCol;
+        const { visibleRows, visibleCols } = this.config;
+        const ctx = this.ctx;
         //style for text
         ctx.font = "12px Arial";
         ctx.fillStyle = "#000";
 
         //drawing text
-        rowSum = 0;
+        let rowSum = 0;
         for (let r = 0; r < visibleRows; r++) {
             const rowIndex = startRow + r;
             let colSum = 0;
@@ -149,14 +168,9 @@ class GridCanvas {
                     this.spreadsheet.currentStartRow + r
                 ];
         }
-
-        if (this.spreadsheet.selectedCell) {
-            this.highlightSelectedRange();
-        }
-        if (this.spreadsheet.selectionManager) {
-            this.updateToolbarButtons();
-        }
     }
+
+    
 
     /**
      * Sets the canvas position (top and left offset).
@@ -264,7 +278,7 @@ class GridCanvas {
         // Add border around the selected range
         ctx.strokeStyle = "#107C41";
         ctx.lineWidth = 2;
-        ctx.strokeRect(left-1 , top -1, width +1, height+1 ); // slight inset for clean look
+        ctx.strokeRect(left - 1, top - 1, width + 1, height + 1); // slight inset for clean look
 
         // Reset lineWidth for other drawings
         ctx.lineWidth = 1;

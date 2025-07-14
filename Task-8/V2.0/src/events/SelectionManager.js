@@ -27,21 +27,6 @@ class SelectionManager {
         const rect = this.spreadsheet.grid.canvas.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
-        const scrollLeft = this.spreadsheet.scrollContainer.scrollLeft;
-
-        console.log(e.clientX,rect.left, e.clientX + scrollLeft)
-        
-        //when window down
-        if(e.clientX < 50){
-            console.log("It's Row")
-            return;
-        }
-        else if(e.clientY < 80){
-            console.log("It's Column")
-        }
-        else{
-            console.log("It's Grid")
-        }
 
         let rowSum = 0;
         const startRow = this.spreadsheet.currentStartRow;

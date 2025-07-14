@@ -7,6 +7,48 @@ import RowResizer from "../resizers/RowResizer.js";
 import GridData from "./GridData .js";
 import SelectionManager from "../events/SelectionManager.js";
 import CommandManager from "../core/CommandManager.js";
+import PointerDispatcher from "../events/PointerDispatcher.js";
+import ColumnSelection from "../events/ColumnSelection.js";
+import RowSelection from "../events/RowSelection.js";
+import CellSelection from "../events/CellSelection.js";
+
+
+
+/**
+ * Manages DOM elements related to the spreadsheet.
+ */
+class DomManager {
+    constructor() {
+        this.scrollContainer = this.createElement("div", "scrollContainer");
+        this.fakeContent = this.createElement("div", "fakeContent");
+        this.rowHeader = this.createElement("div", "rowHeader");
+        this.colHeader = this.createElement("div", "colHeader");
+        this.grid = this.createElement("div", "grid");
+        this.topLeft = this.createElement("div", "topLeft");
+        this.input = this.createElement("input", "input");
+
+        // Append elements
+        this.scrollContainer.append(this.fakeContent, this.rowHeader, this.colHeader, this.grid, this.topLeft, this.input);
+        document.body.prepend(this.scrollContainer);
+    }
+
+    createElement(tag, id) {
+        const element = document.createElement(tag);
+        element.id = id;
+        return element;
+    }
+
+    getScrollContainer() {
+        return this.scrollContainer;
+    }
+
+    getTopLeft() {
+        return this.topLeft;
+    }
+}
+
+
+
 
 /**
  * Represents the main spreadsheet component that handles rendering, scrolling,
@@ -19,32 +61,9 @@ class Spreadsheet {
     constructor(config) {
         this.config = config;
 
-        //create #scrollContainer div and append to body
-        const scrollContainer = document.createElement("div");
-        scrollContainer.id = "scrollContainer";
-        document.body.prepend(scrollContainer);
-
-        const fakeContent = document.createElement("div");
-        fakeContent.id = "fakeContent";
-        scrollContainer.appendChild(fakeContent);
-        const rowHeader = document.createElement("div");
-        rowHeader.id = "rowHeader";
-        scrollContainer.appendChild(rowHeader);
-        const colHeader = document.createElement("div");
-        colHeader.id = "colHeader";
-        scrollContainer.appendChild(colHeader);
-        const grid = document.createElement("div");
-        grid.id = "grid";
-        scrollContainer.appendChild(grid);
-
-        const topLeft = document.createElement("div");
-        topLeft.id = "topLeft";
-        scrollContainer.appendChild(topLeft);
-
-        const input = document.createElement("input");
-        input.id = "input";
-        input.type = "text";
-        scrollContainer.appendChild(input);
+        // the DomManager to handle DOM creation
+        this.domManager = new DomManager();
+        this.scrollContainer = this.domManager.getScrollContainer()
 
         //dynamic sizes of row and col
         this.colWidths = new Array(this.config.totalCols).fill(
@@ -53,34 +72,24 @@ class Spreadsheet {
         this.rowHeights = new Array(this.config.totalRows).fill(
             this.config.cellHeight
         );
-
         this.currentStartRow = 0;
         this.currentStartCol = 0;
+        this.isScrollScheduled = false; // flag to track if rAF callback is queued
+
 
         //creating grid, rowheader and colheader objects
         this.grid = new GridCanvas(this);
         this.rowHeader = new RowHeader(this);
         this.colHeader = new ColHeader(this);
         this.gridData = new GridData();
-        this.topLeft = document.getElementById("topLeft");
+        
+        this.domManager.getScrollContainer().addEventListener("scroll", this.handleScroll.bind(this));
 
-        this.scrollContainer = document.getElementById("scrollContainer");
-        this.scrollContainer.addEventListener(
-            "scroll",
-            this.handleScroll.bind(this)
-        ); //adding event listner
-
-        this.isScrollScheduled = false; // flag to track if rAF callback is queued
 
         this.selectedCell = null; // Initially no cell selected
         this.selectedRow = null; // Initially no rows selected
         this.selectedColumn = null; // Initially no columns selected
-        
-        this.isColumnAdder = false;
-        this.isRowAdder = false;
-
-        this.isColResizeIntent = false; // Shared coordination flag
-        this.isRowResizeIntent = false; //Shared coordination flag
+                
 
         this.cellEditor = new CellEditor(this);
 
@@ -90,14 +99,19 @@ class Spreadsheet {
         // Initial render
         this.render();
 
-        // Create Resizer instances
-        this.columnResizer = new ColumnResizer(this);
-        this.rowResizer = new RowResizer(this);
+        
 
         this.selectionManager = new SelectionManager(this);
-        this.grid.events.attachEvents(this.grid.canvas)
-        this.colHeader.events.attachEvents(this.colHeader.canvas)
-        this.rowHeader.events.attachEvents(this.rowHeader.canvas)
+
+        this.dispatcher = new PointerDispatcher();
+
+        this.cellSelection = new CellSelection(this, this.dispatcher)
+
+        this.colResize = new ColumnResizer(this, this.dispatcher)
+        this.colSelection = new ColumnSelection(this, this.dispatcher);
+
+        this.rowResizer = new RowResizer(this, this.dispatcher)
+        this.rowSelection = new RowSelection(this, this.dispatcher)
     }
 
     /**
@@ -148,10 +162,10 @@ class Spreadsheet {
                     rowSum + this.config.cellHeight + this.config.topPadding,
                     colSum + this.config.rowWidth
                 );
-                this.topLeft.style.top = `${
+                this.domManager.getTopLeft().style.top = `${
                     scrollTop + this.config.topPadding
                 }px`;
-                this.topLeft.style.left = `${scrollLeft}px`;
+                this.domManager.getTopLeft().style.left = `${scrollLeft}px`;
 
                 this.render();
             });
