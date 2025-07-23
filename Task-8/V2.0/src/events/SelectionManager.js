@@ -1,6 +1,18 @@
 class SelectionManager {
-    constructor(spreadsheet) {
-        this.spreadsheet = spreadsheet;
+    constructor({
+        gridCanvas,
+        rowHeights,
+        colWidths,
+        config,
+        getCurrentStartRow,
+        getCurrentStartCol,
+    }) {
+        this.gridCanvas = gridCanvas;
+        this.rowHeights = rowHeights;
+        this.colWidths = colWidths;
+        this.config = config;
+        this.getCurrentStartRow = getCurrentStartRow;
+        this.getCurrentStartCol = getCurrentStartCol;
 
         this.isSelecting = false;
         this.startCell = null;
@@ -9,7 +21,6 @@ class SelectionManager {
         this.autoScrollInterval = null;
         this.autoScrollSpeed = 20; // pixels per scroll step
         this.autoScrollDelay = 50; // ms between scroll steps
-
     }
 
     getSelectedRange() {
@@ -24,15 +35,15 @@ class SelectionManager {
     }
 
     getCellFromMouseEvent(e, type) {
-        const rect = this.spreadsheet.grid.canvas.getBoundingClientRect();
+        const rect = this.gridCanvas.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
 
         let rowSum = 0;
-        const startRow = this.spreadsheet.currentStartRow;
+        const startRow = this.getCurrentStartRow();
         let row = null;
-        for (let r = 0; r < this.spreadsheet.config.visibleRows; r++) {
-            const h = this.spreadsheet.rowHeights[startRow + r];
+        for (let r = 0; r < this.config.visibleRows; r++) {
+            const h = this.rowHeights[startRow + r];
             if (rowSum + h > y) {
                 row = startRow + r;
                 break;
@@ -41,10 +52,10 @@ class SelectionManager {
         }
 
         let colSum = 0;
-        const startCol = this.spreadsheet.currentStartCol;
+        const startCol = this.getCurrentStartCol();
         let col = null;
-        for (let c = 0; c < this.spreadsheet.config.visibleCols; c++) {
-            const w = this.spreadsheet.colWidths[startCol + c];
+        for (let c = 0; c < this.config.visibleCols; c++) {
+            const w = this.colWidths[startCol + c];
             if (colSum + w > x) {
                 col = startCol + c;
                 break;

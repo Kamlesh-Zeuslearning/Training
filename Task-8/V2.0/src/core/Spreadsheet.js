@@ -12,8 +12,6 @@ import ColumnSelection from "../events/ColumnSelection.js";
 import RowSelection from "../events/RowSelection.js";
 import CellSelection from "../events/CellSelection.js";
 
-
-
 /**
  * Manages DOM elements related to the spreadsheet.
  */
@@ -28,7 +26,14 @@ class DomManager {
         this.input = this.createElement("input", "input");
 
         // Append elements
-        this.scrollContainer.append(this.fakeContent, this.rowHeader, this.colHeader, this.grid, this.topLeft, this.input);
+        this.scrollContainer.append(
+            this.fakeContent,
+            this.rowHeader,
+            this.colHeader,
+            this.grid,
+            this.topLeft,
+            this.input
+        );
         document.body.prepend(this.scrollContainer);
     }
 
@@ -47,9 +52,6 @@ class DomManager {
     }
 }
 
-
-
-
 /**
  * Represents the main spreadsheet component that handles rendering, scrolling,
  * resizing, and selection interactions.
@@ -63,7 +65,7 @@ class Spreadsheet {
 
         // the DomManager to handle DOM creation
         this.domManager = new DomManager();
-        this.scrollContainer = this.domManager.getScrollContainer()
+        this.scrollContainer = this.domManager.getScrollContainer();
 
         //dynamic sizes of row and col
         this.colWidths = new Array(this.config.totalCols).fill(
@@ -76,20 +78,20 @@ class Spreadsheet {
         this.currentStartCol = 0;
         this.isScrollScheduled = false; // flag to track if rAF callback is queued
 
-
         //creating grid, rowheader and colheader objects
         this.grid = new GridCanvas(this);
         this.rowHeader = new RowHeader(this);
         this.colHeader = new ColHeader(this);
         this.gridData = new GridData();
-        
-        this.domManager.getScrollContainer().addEventListener("scroll", this.handleScroll.bind(this));
+        window.gridData = this.gridData;
 
+        this.domManager
+            .getScrollContainer()
+            .addEventListener("scroll", this.handleScroll.bind(this));
 
         this.selectedCell = null; // Initially no cell selected
         this.selectedRow = null; // Initially no rows selected
         this.selectedColumn = null; // Initially no columns selected
-                
 
         this.cellEditor = new CellEditor(this);
 
@@ -99,19 +101,25 @@ class Spreadsheet {
         // Initial render
         this.render();
 
-        
-
-        this.selectionManager = new SelectionManager(this);
+        this.selectionManager = new SelectionManager({
+            gridCanvas: this.grid.canvas,
+            rowHeights: this.rowHeights,
+            colWidths: this.colWidths,
+            config: this.config,
+            getCurrentStartRow: () => this.currentStartRow,
+            getCurrentStartCol: () => this.currentStartCol,
+        });
+        window.selectionManager = this.selectionManager;
 
         this.dispatcher = new PointerDispatcher();
 
-        this.cellSelection = new CellSelection(this, this.dispatcher)
+        this.cellSelection = new CellSelection(this, this.dispatcher);
 
-        this.colResize = new ColumnResizer(this, this.dispatcher)
+        this.colResize = new ColumnResizer(this, this.dispatcher);
         this.colSelection = new ColumnSelection(this, this.dispatcher);
 
-        this.rowResizer = new RowResizer(this, this.dispatcher)
-        this.rowSelection = new RowSelection(this, this.dispatcher)
+        this.rowResizer = new RowResizer(this, this.dispatcher);
+        this.rowSelection = new RowSelection(this, this.dispatcher);
     }
 
     /**
@@ -149,7 +157,6 @@ class Spreadsheet {
                 this.currentStartCol = startCol;
                 this.currentStartRow = startRow;
 
-                
                 this.rowHeader.setPosition(
                     rowSum + this.config.cellHeight + this.config.topPadding,
                     scrollLeft
