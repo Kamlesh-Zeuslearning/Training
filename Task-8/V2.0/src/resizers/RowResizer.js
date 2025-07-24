@@ -78,7 +78,14 @@ export default class RowResizer {
      */
     onMouseDown(e) {
         if (this.addRow) {
-            const cmd = new AddRowCommand(this.spreadsheet, this.rowIndex + 1);
+            const cmd = new AddRowCommand(
+                {
+                    rowHeights: this.spreadsheet.rowHeights,
+                    gridData: this.spreadsheet.gridData,
+                    render: this.spreadsheet.render.bind(this.spreadsheet),
+                },
+                this.rowIndex + 1
+            );
             this.spreadsheet.commandManager.executeCommand(cmd);
             return;
         }
@@ -91,16 +98,19 @@ export default class RowResizer {
      * Handles mouse up event to stop the row resizing.
      */
     onMouseUp() {
-        const finalHeight = this.spreadsheet.rowHeights[this.rowIndex];
-        if (finalHeight !== this.startRowHeight) {
-            const cmd = new ResizeRowCommand(
-                this.spreadsheet,
-                this.rowIndex,
-                this.startRowHeight,
-                finalHeight
-            );
-            this.spreadsheet.commandManager.executeCommand(cmd); // Execute the resize command
+        if (this.addRow) {
+            return;
         }
+
+        const finalHeight = this.spreadsheet.rowHeights[this.rowIndex];
+        const cmd = new ResizeRowCommand(
+            this.spreadsheet,
+            this.rowIndex,
+            this.startRowHeight,
+            finalHeight
+        );
+        this.spreadsheet.commandManager.executeCommand(cmd); // Execute the resize command
+
         this.rowIndex = null; // Clear the row index
     }
 
@@ -111,6 +121,9 @@ export default class RowResizer {
      * @param {MouseEvent} e - The mouse move event
      */
     onMouseResize(e) {
+        if (this.addRow) {
+            return;
+        }
         window.requestAnimationFrame(() => {
             const delta = e.clientY - this.startY; // Calculate the distance moved by the mouse
             const newHeight = this.startRowHeight + delta; // Calculate new row height

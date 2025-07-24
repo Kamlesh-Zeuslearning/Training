@@ -5,19 +5,22 @@
 class AddRowCommand {
     /**
      * Creates an instance of AddRowCommand.
-     * 
+     *
      * @param {Object} spreadsheet - The spreadsheet object that manages grid data and row heights.
      * @param {number} rowIndex - The index at which to insert the new row.
      */
-    constructor(spreadsheet, rowIndex) {
-        this.spreadsheet = spreadsheet;
+    constructor({ rowHeights, gridData, render }, rowIndex) {
+        this.rowHeights = rowHeights;
+        this.gridData = gridData;
+        this.render = render;
+
         this.rowIndex = rowIndex;
 
         /**
          * The height to assign to the new row. Defaults to 25 if undefined.
          * @type {number}
          */
-        this.oldHeight = spreadsheet.rowHeights[rowIndex] || 25;
+        this.oldHeight = rowHeights[rowIndex] || 25;
 
         /**
          * Stores the data from the deleted row during undo for restoration.
@@ -33,9 +36,9 @@ class AddRowCommand {
      * and triggers a UI update.
      */
     execute() {
-        this.spreadsheet.rowHeights.splice(this.rowIndex, 0, this.oldHeight);
-        this.spreadsheet.gridData.insertRow(this.rowIndex);
-        this.spreadsheet.render();
+        this.rowHeights.splice(this.rowIndex, 0, this.oldHeight);
+        this.gridData.insertRow(this.rowIndex);
+        this.render();
     }
 
     /**
@@ -43,15 +46,15 @@ class AddRowCommand {
      * Removes the inserted row, captures its data, and restores any overwritten cell values.
      */
     undo() {
-        this.spreadsheet.rowHeights.splice(this.rowIndex, 1);
-        this.deletedRowData = this.spreadsheet.gridData.deleteRow(this.rowIndex);
+        this.rowHeights.splice(this.rowIndex, 1);
+        this.deletedRowData = this.gridData.deleteRow(this.rowIndex);
 
         // Restore the cell values from the deleted row
         for (const { row, col, value } of this.deletedRowData) {
-            this.spreadsheet.gridData.setCellValue(row, col, value);
+            this.gridData.setCellValue(row, col, value);
         }
 
-        this.spreadsheet.render();
+        this.render();
     }
 }
 
