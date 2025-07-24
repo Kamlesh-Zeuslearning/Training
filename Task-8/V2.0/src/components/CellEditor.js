@@ -23,9 +23,9 @@ class CellEditor {
 
         /**
          * Currently edited cell position.
-         * @type {{row: number, col: number}|undefined}
+         * @type {{row: number, col: number}|null}
          */
-        this.currentCell = undefined;
+        this.currentCell = null;
 
         this.initListeners();
     }
@@ -35,12 +35,17 @@ class CellEditor {
      * Handles Escape, Enter, and Arrow keys for editing and navigation.
      */
     initListeners() {
+        this.spreadsheet.grid.canvas.addEventListener("dblclick", () => {
+            this.inputField.style.visibility = "visible";
+            this.inputField.focus();
+        });
         window.addEventListener("keydown", (e) => {
-            if(e.ctrlKey) return;
+            if (e.ctrlKey) return;
             if (e.key === "Escape") {
                 if (document.activeElement === this.inputField) {
                     this.inputField.blur();
                 } else {
+                    this.inputField.style.visibility = "hidden";
                     this.spreadsheet.selectionManager.startCell = null;
                     this.spreadsheet.selectionManager.endCell = null;
 
@@ -54,8 +59,8 @@ class CellEditor {
                 e.key === "Enter"
             ) {
                 e.preventDefault();
-                if (this.spreadsheet.selectedCell === null) return;
                 const cell = this.spreadsheet.selectedCell;
+                if (cell === null) return;
 
                 if (e.key === "ArrowDown") {
                     cell.row++;
@@ -66,7 +71,6 @@ class CellEditor {
                 } else if (e.key === "ArrowLeft" && cell.col > 0) {
                     cell.col--;
                 } else if (e.key === "Enter") {
-                    const cell = this.spreadsheet.selectedCell;
                     if (!e.shiftKey) {
                         cell.row++;
                     } else if (cell.row > 0) {
@@ -75,15 +79,16 @@ class CellEditor {
                 }
 
                 this.spreadsheet.selectionManager.startCell = {
-                    row: this.spreadsheet.selectedCell.row,
-                    col: this.spreadsheet.selectedCell.col,
+                    row: cell.row,
+                    col: cell.col,
                 };
                 this.spreadsheet.selectionManager.endCell = {
-                    row: this.spreadsheet.selectedCell.row,
-                    col: this.spreadsheet.selectedCell.col,
+                    row: cell.row,
+                    col: cell.col,
                 };
                 this.showEditor(cell.row, cell.col);
             } else {
+                this.inputField.style.visibility = "visible";
                 this.inputField.focus();
             }
         });
@@ -121,12 +126,11 @@ class CellEditor {
         } else {
             this.inputField.value = "";
         }
-
         this.inputField.style.display = "block";
-
+        this.inputField.style.visibility = "hidden";
         this.currentCell = { row, col };
 
-        this.spreadsheet.render()
+        this.spreadsheet.render();
     }
 
     /**
@@ -134,27 +138,18 @@ class CellEditor {
      * Clears the input field after committing.
      */
     commitInput() {
-        this.inputField.blur();
+        if (this.currentCell == null) return;
+        const { row, col } = this.currentCell;
+
         const value = this.inputField.value;
-        const { row, col } = this.currentCell || {};
-        if (row == null || col == null) return;
+        const oldValue = this.spreadsheet.gridData.getCellValue(row, col);
 
-        const saveValue = this.spreadsheet.gridData.getCellValue(row, col);
-
-        if (value === "" && saveValue === null) {
-            this.spreadsheet.gridData.clearCell(row, col);
-        } else if (saveValue == value) {
+        if ((value === "" && oldValue === null) || oldValue == value) {
             // No change
-        } else if (value === "") {
-            const cmd = new EditCellCommand(this.spreadsheet, row, col, value);
-            this.spreadsheet.commandManager.executeCommand(cmd);
-            this.spreadsheet.gridData.clearCell(row, col);
-        } else {
-            const cmd = new EditCellCommand(this.spreadsheet, row, col, value);
-            this.spreadsheet.commandManager.executeCommand(cmd);
+            return;
         }
-
-        this.inputField.value = "";
+        const cmd = new EditCellCommand(this.spreadsheet, row, col, value);
+        this.spreadsheet.commandManager.executeCommand(cmd);
     }
 
     /**
@@ -162,10 +157,8 @@ class CellEditor {
      */
     hideInput() {
         this.inputField.style.display = "none";
-        this.inputField.value = "";
-        this.currentCell = {};
+        this.currentCell = null;
         this.spreadsheet.selectedCell = null;
-        // this.spreadsheet.isSelectingRange = false;
 
         this.spreadsheet.render();
     }

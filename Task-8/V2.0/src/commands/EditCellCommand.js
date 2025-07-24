@@ -33,7 +33,15 @@ class EditCellCommand {
      * and triggering a grid refresh.
      */
     execute() {
-        this.spreadsheet.gridData.setCellValue(this.row, this.col, this.newValue);
+        if (this.newValue === "") {
+            this.spreadsheet.gridData.clearCell(this.row, this.col);
+        } else {
+            this.spreadsheet.gridData.setCellValue(
+                this.row,
+                this.col,
+                this.newValue
+            );
+        }
         this._refreshGrid();
     }
 
@@ -45,7 +53,11 @@ class EditCellCommand {
         if (this.oldValue === null || this.oldValue === "") {
             this.spreadsheet.gridData.clearCell(this.row, this.col);
         } else {
-            this.spreadsheet.gridData.setCellValue(this.row, this.col, this.oldValue);
+            this.spreadsheet.gridData.setCellValue(
+                this.row,
+                this.col,
+                this.oldValue
+            );
         }
         this._refreshGrid();
     }
