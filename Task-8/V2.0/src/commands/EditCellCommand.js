@@ -6,26 +6,31 @@ class EditCellCommand {
     /**
      * Creates an instance of EditCellCommand.
      *
-     * @param {Object} spreadsheet - The spreadsheet instance containing gridData and rendering methods.
-     * @param {number} row - The row index of the cell to edit.
-     * @param {number} col - The column index of the cell to edit.
-     * @param {*} newValue - The new value to set in the cell.
+     * @param {Object} options
+     * @param {Object} options.gridData - The grid data instance with cell access methods.
+     * @param {Function} options.render - Function to trigger a canvas/grid re-render.
+     * @param {number} options.row - The row index of the cell to edit.
+     * @param {number} options.col - The column index of the cell to edit.
+     * @param {string} options.newValue - The new value to assign to the cell.
      */
-    constructor(spreadsheet, row, col, newValue) {
+    constructor({ gridData, render, row, col, newValue }) {
         /** @type {Object} */
-        this.spreadsheet = spreadsheet;
+        this.gridData = gridData;
 
         /** @type {number} */
         this.row = row;
 
+        /** @type {Object} */
+        this.render = render;
+
         /** @type {number} */
         this.col = col;
 
-        /** @type {*} */
+        /** @type {string} */
         this.newValue = newValue;
 
-        /** @type {*} */
-        this.oldValue = spreadsheet.gridData.getCellValue(row, col);
+        /** @type {string|null} */
+        this.oldValue = gridData.getCellValue(row, col);
     }
 
     /**
@@ -33,16 +38,8 @@ class EditCellCommand {
      * and triggering a grid refresh.
      */
     execute() {
-        if (this.newValue === "") {
-            this.spreadsheet.gridData.clearCell(this.row, this.col);
-        } else {
-            this.spreadsheet.gridData.setCellValue(
-                this.row,
-                this.col,
-                this.newValue
-            );
-        }
-        this._refreshGrid();
+        this._setValue(this.newValue);
+        this.render();
     }
 
     /**
@@ -50,25 +47,22 @@ class EditCellCommand {
      * or clearing the cell if the original value was empty.
      */
     undo() {
-        if (this.oldValue === null || this.oldValue === "") {
-            this.spreadsheet.gridData.clearCell(this.row, this.col);
-        } else {
-            this.spreadsheet.gridData.setCellValue(
-                this.row,
-                this.col,
-                this.oldValue
-            );
-        }
-        this._refreshGrid();
+        this._setValue(this.oldValue);
+        this.render();
     }
 
     /**
-     * Refreshes the spreadsheet grid and headers to reflect changes.
-     * Called after execute and undo operations.
+     * Sets a value to the specified cell or clears it if value is null/empty.
+     *
      * @private
+     * @param {string|null} value - The value to set in the cell.
      */
-    _refreshGrid() {
-        this.spreadsheet.render();
+    _setValue(value) {
+        if (value === null || value === "") {
+            this.gridData.clearCell(this.row, this.col);
+        } else {
+            this.gridData.setCellValue(this.row, this.col, value);
+        }
     }
 }
 

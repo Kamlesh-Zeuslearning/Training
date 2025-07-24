@@ -148,7 +148,14 @@ class CellEditor {
             // No change
             return;
         }
-        const cmd = new EditCellCommand(this.spreadsheet, row, col, value);
+        
+        const cmd = new EditCellCommand({
+            gridData: this.spreadsheet.gridData,
+            render: this.spreadsheet.render.bind(this.spreadsheet),
+            row,
+            col,
+            newValue: value,
+        });
         this.spreadsheet.commandManager.executeCommand(cmd);
     }
 
