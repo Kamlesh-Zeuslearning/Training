@@ -49,7 +49,6 @@ class GridCanvas {
      * @param {number} startCol - Index of the first column to render.
      */
     draw() {
-
         const ctx = this.ctx;
         ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
         ctx.beginPath();
@@ -69,11 +68,13 @@ class GridCanvas {
         }
 
         this.drawGridLines();
-        this.drawCellContent();
 
         if (this.spreadsheet.selectedCell) {
             this.highlightSelectedRange();
         }
+
+        this.drawCellContent();
+
         if (this.spreadsheet.selectionManager) {
             this.updateToolbarButtons();
         }
@@ -169,8 +170,6 @@ class GridCanvas {
                 ];
         }
     }
-
-    
 
     /**
      * Sets the canvas position (top and left offset).
@@ -274,6 +273,39 @@ class GridCanvas {
         // Fill selection with transparent color
         ctx.fillStyle = "rgba(180, 215, 255, 0.3)";
         ctx.fillRect(left, top, width, height);
+
+        //clear selected cell fill area
+        const selectedCellRow = this.spreadsheet.selectedCell.row;
+        const selectedCellCol = this.spreadsheet.selectedCell.col;
+        if (startRow === selectedCellRow && startCol === selectedCellCol) {
+            ctx.clearRect(
+                left + 1,
+                top + 1,
+                this.spreadsheet.colWidths[selectedCellCol] - 2,
+                this.spreadsheet.rowHeights[selectedCellRow] - 2
+            );
+        } else if (startRow === selectedCellRow && endCol === selectedCellCol) {
+            ctx.clearRect(
+                left + 1 + width - this.spreadsheet.colWidths[selectedCellCol],
+                top + 1,
+                this.spreadsheet.colWidths[selectedCellCol] - 2,
+                this.spreadsheet.rowHeights[selectedCellRow] - 2
+            );
+        } else if (endRow === selectedCellRow && startCol === selectedCellCol) {
+            ctx.clearRect(
+                left + 1,
+                top + 1 + height - this.spreadsheet.rowHeights[selectedCellRow],
+                this.spreadsheet.colWidths[selectedCellCol] - 2,
+                this.spreadsheet.rowHeights[selectedCellRow] - 2
+            );
+        } else {
+            ctx.clearRect(
+                left + 1 + width - this.spreadsheet.colWidths[selectedCellCol],
+                top + 1 + height - this.spreadsheet.rowHeights[selectedCellRow],
+                this.spreadsheet.colWidths[selectedCellCol] - 2,
+                this.spreadsheet.rowHeights[selectedCellRow] - 2
+            );
+        }
 
         // Add border around the selected range
         ctx.strokeStyle = "#107C41";
