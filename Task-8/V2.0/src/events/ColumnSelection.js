@@ -2,7 +2,6 @@ class ColumnSelection {
     constructor(spreadsheet, dispatcher) {
         this.spreadsheet = spreadsheet;
 
-
         this.autoScrollInterval = null;
         this.autoScrollSpeed = 20; // pixels per scroll step
         this.autoScrollDelay = 50; // ms between scroll steps
@@ -29,7 +28,7 @@ class ColumnSelection {
         this.spreadsheet.selectedCell = null;
         this.spreadsheet.selectionManager.startCell = cell;
         this.spreadsheet.selectionManager.endCell = cell;
-        
+
         this.spreadsheet.selectedRow = null;
         this.spreadsheet.selectedColumn = cell.col;
 
@@ -37,7 +36,6 @@ class ColumnSelection {
     }
 
     handleMouseMove(e) {
-
         const containerRect =
             this.spreadsheet.scrollContainer.getBoundingClientRect();
         const threshold = 40;
@@ -49,12 +47,6 @@ class ColumnSelection {
             scrollX = -this.autoScrollSpeed;
         } else if (e.clientX > containerRect.right - threshold) {
             scrollX = this.autoScrollSpeed;
-        }
-
-        if (e.clientY < containerRect.top + threshold) {
-            scrollY = -this.autoScrollSpeed;
-        } else if (e.clientY > containerRect.bottom - threshold) {
-            scrollY = this.autoScrollSpeed;
         }
 
         if (scrollX !== 0 || scrollY !== 0) {

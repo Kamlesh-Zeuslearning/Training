@@ -42,12 +42,6 @@ class RowSelection {
         let scrollX = 0,
             scrollY = 0;
 
-        if (e.clientX < containerRect.left + threshold) {
-            scrollX = -this.autoScrollSpeed;
-        } else if (e.clientX > containerRect.right - threshold) {
-            scrollX = this.autoScrollSpeed;
-        }
-
         if (e.clientY < containerRect.top + threshold) {
             scrollY = -this.autoScrollSpeed;
         } else if (e.clientY > containerRect.bottom - threshold) {
@@ -78,13 +72,12 @@ class RowSelection {
             }
         }
 
-        
         // Also update selection normally if mouse inside viewport
         const cell = this.spreadsheet.selectionManager.getCellFromMouseEvent(
             e,
             "rowHeader"
         );
-        if (cell ) {
+        if (cell) {
             this.spreadsheet.selectionManager.endCell = cell;
             this.spreadsheet.render();
         }
