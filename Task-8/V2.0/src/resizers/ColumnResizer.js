@@ -13,9 +13,6 @@ export default class ColumnResizer {
         this.spreadsheet = spreadsheet;
 
         /** @type {boolean} */
-        this.resize = false;
-
-        /** @type {boolean} */
         this.addCol = false;
 
         /** @type {number|null} */
@@ -49,8 +46,6 @@ export default class ColumnResizer {
      * @param {MouseEvent} e - The mouse move event.
      */
     handleMouseMove(e) {
-        
-
         const rect = this.spreadsheet.colHeader.canvas.getBoundingClientRect();
         const mouseX = e.clientX - rect.left;
         let widthSum = 0;
@@ -73,11 +68,10 @@ export default class ColumnResizer {
         if (this.colIndex !== null) {
             if (e.clientY <= 60) {
                 this.addCol = true;
-                
+
                 this.spreadsheet.colHeader.canvas.style.cursor = "cell";
             } else {
                 this.addCol = false;
-                
 
                 this.spreadsheet.colHeader.canvas.style.cursor = "col-resize";
             }
@@ -89,10 +83,13 @@ export default class ColumnResizer {
      * @param {MouseEvent} e - The mouse down event.
      */
     handleMouseDown(e) {
-        
         if (this.addCol) {
             const cmd = new AddColumnCommand(
-                this.spreadsheet,
+                {
+                    colWidths: this.spreadsheet.colWidths,
+                    gridData: this.spreadsheet.gridData,
+                    render: this.spreadsheet.render.bind(this.spreadsheet),
+                },
                 this.colIndex + 1
             );
             this.spreadsheet.commandManager.executeCommand(cmd);
@@ -108,19 +105,20 @@ export default class ColumnResizer {
      * Handles mouse up event to finalize a column resize operation.
      */
     handleMouseUp() {
-
-        const finalWidth = this.spreadsheet.colWidths[this.colIndex];
-        if (finalWidth !== this.startColWidth) {
-            const cmd = new ResizeColumnCommand(
-                this.spreadsheet,
-                this.colIndex,
-                this.startColWidth,
-                finalWidth
-            );
-            this.spreadsheet.commandManager.executeCommand(cmd);
+        if (this.addCol) {
+            return;
         }
-        this.colIndex = null;
+        const finalWidth = this.spreadsheet.colWidths[this.colIndex];
 
+        const cmd = new ResizeColumnCommand(
+            this.spreadsheet,
+            this.colIndex,
+            this.startColWidth,
+            finalWidth
+        );
+        this.spreadsheet.commandManager.executeCommand(cmd);
+
+        this.colIndex = null;
     }
 
     /**
@@ -128,6 +126,9 @@ export default class ColumnResizer {
      * @param {MouseEvent} e - The mouse move event.
      */
     onMouseResize(e) {
+         if (this.addCol) {
+            return;
+        }
         window.requestAnimationFrame(() => {
             const delta = e.clientX - this.startX;
             const newWidth = this.startColWidth + delta;

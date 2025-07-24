@@ -5,12 +5,15 @@
 class AddColumnCommand {
     /**
      * Creates an instance of AddColumnCommand.
-     * 
+     *
      * @param {Object} spreadsheet - The spreadsheet object that manages grid data and column widths.
      * @param {number} colIndex - The index at which to insert the new column.
      */
-    constructor(spreadsheet, colIndex) {
-        this.spreadsheet = spreadsheet;
+    constructor({ colWidths, gridData, render }, colIndex) {
+        this.colWidths = colWidths;
+        this.gridData = gridData;
+        this.render = render;
+
         this.colIndex = colIndex;
 
         /**
@@ -24,7 +27,7 @@ class AddColumnCommand {
          * The width to assign to the new column. Defaults to 100 if undefined.
          * @type {number}
          */
-        this.oldWidth = spreadsheet.colWidths[colIndex] || 100;
+        this.oldWidth = colWidths[colIndex] || 100;
     }
 
     /**
@@ -33,9 +36,9 @@ class AddColumnCommand {
      * and triggers a UI update.
      */
     execute() {
-        this.spreadsheet.colWidths.splice(this.colIndex, 0, this.oldWidth);
-        this.spreadsheet.gridData.insertColumn(this.colIndex);
-        this.spreadsheet.render();
+        this.colWidths.splice(this.colIndex, 0, this.oldWidth);
+        this.gridData.insertColumn(this.colIndex);
+        this.render();
     }
 
     /**
@@ -43,15 +46,15 @@ class AddColumnCommand {
      * Removes the inserted column, captures its data, and restores any overwritten cell values.
      */
     undo() {
-        this.spreadsheet.colWidths.splice(this.colIndex, 1);
-        this.deletedColumnData = this.spreadsheet.gridData.deleteColumn(this.colIndex);
+        this.colWidths.splice(this.colIndex, 1);
+        this.deletedColumnData = this.gridData.deleteColumn(this.colIndex);
 
         // Restore the cell values from the deleted column
         for (const { row, col, value } of this.deletedColumnData) {
-            this.spreadsheet.gridData.setCellValue(row, col, value);
+            this.gridData.setCellValue(row, col, value);
         }
 
-        this.spreadsheet.render();
+        this.render();
     }
 }
 
