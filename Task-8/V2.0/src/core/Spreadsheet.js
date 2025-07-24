@@ -83,7 +83,7 @@ class Spreadsheet {
         this.rowHeader = new RowHeader(this);
         this.colHeader = new ColHeader(this);
         this.gridData = new GridData();
-        window.gridData = this.gridData;
+        window.getCellValue = this.gridData.getCellValue.bind(this.gridData);
 
         this.domManager
             .getScrollContainer()
@@ -109,7 +109,7 @@ class Spreadsheet {
             getCurrentStartRow: () => this.currentStartRow,
             getCurrentStartCol: () => this.currentStartCol,
         });
-        window.selectionManager = this.selectionManager;
+        window.getSelectedRange = this.selectionManager.getSelectedRange.bind(this.selectionManager);
 
         this.dispatcher = new PointerDispatcher();
 
